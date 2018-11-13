@@ -31,7 +31,6 @@ def main(stdscr):
         elif key in keymap.K_LEFT:
             if(tabs[selected_tab].get_current_path() != os.path.dirname(tabs[selected_tab].get_current_path())):
                 tabs[selected_tab].set_current_path(os.path.dirname(tabs[selected_tab].get_current_path()))
-                tabs[selected_tab].set_selected_item_index(0)
         elif key in keymap.K_RIGHT:
             if(os.listdir(tabs[selected_tab].get_current_path())[:1]):
                 new_path = '/' +  os.listdir(tabs[selected_tab].get_current_path())[tabs[selected_tab].get_selected_item_index()]
@@ -39,7 +38,6 @@ def main(stdscr):
                     new_path = tabs[selected_tab].get_current_path() + new_path
                 if(os.path.isdir(new_path) and os.access(new_path, os.R_OK)):
                     tabs[selected_tab].set_current_path(new_path)
-                    tabs[selected_tab].set_selected_item_index(0)
         elif key in keymap.K_UP:
             if(tabs[selected_tab].get_selected_item_index() != 0):
                 tabs[selected_tab].set_selected_item_index(tabs[selected_tab].get_selected_item_index() - 1)
@@ -57,11 +55,13 @@ def draw_screen(stdscr,tabs,selected_tab,window_parent_dir,window_current_dir,wi
 
     # Draw current Path on top
     if(tabs[selected_tab].get_current_path() != '/'):
+        pass
         stdscr.addstr(0,0,tabs[selected_tab].get_current_path()+'/'+os.listdir(tabs[selected_tab].get_current_path())[tabs[selected_tab].get_selected_item_index()],curses.A_REVERSE)
     else:
         stdscr.addstr(0,0,tabs[selected_tab].get_current_path()+os.listdir(tabs[selected_tab].get_current_path())[tabs[selected_tab].get_selected_item_index()],curses.A_REVERSE)
 
     stdscr.chgat(-1, curses.A_REVERSE)
+
     # display items from parent directory
     if(tabs[selected_tab].get_current_path() != '/'):
         items = os.listdir(os.path.dirname(tabs[selected_tab].get_current_path()))[:curses.LINES-1]
