@@ -19,17 +19,18 @@ def main(stdscr):
         window_preview = curses.newwin(     curses.LINES-1-config.border_width,     config.preview_width,       config.border_width,  config.current_dir_width+config.preview_width+config.border_width)
     while True:
         selected_tab = [tab['tab'] for tab in tabs if tab['selected'] == True][0]
+        stdscr.clear()
 
         # display next path in top line
         if config.display_next_path:
             stdscr.addstr(0,0,str(selected_tab.selected_item_path),curses.A_REVERSE)
 
         # Draw tabs on top
-        for tab in tabs:
+        for idx,tab in enumerate(sorted(tabs,key=lambda x: int(x['index']))):
             if tab['selected'] == True:
-                stdscr.addstr(0,curses.COLS-len(tabs)+int(tab['index']) - 1,str(tab['index']),curses.A_REVERSE)
+                stdscr.addstr(0,curses.COLS-len(tabs)+idx-1,str(tab['index']),curses.A_REVERSE)
             else:
-                stdscr.addstr(0,curses.COLS-len(tabs)+int(tab['index']) -1,str(tab['index']))
+                stdscr.addstr(0,curses.COLS-len(tabs)+idx-1,str(tab['index']))
 
         # Draw contetns of the parent directory
         if config.parent_dir_width != 0 and selected_tab.path != '/':
@@ -42,10 +43,8 @@ def main(stdscr):
             items = os.listdir(selected_tab.path)[:window_current_dir.getmaxyx()[0]]
             if(items):
                 for index,entry in enumerate(items):
-                    if(index != selected_tab.selected_item_index):
-                        window_current_dir.addstr(index,0,str(entry))
-                    else:
-                        window_current_dir.addstr(index,0,str(entry),curses.A_REVERSE)
+                    window_current_dir.addstr(index,0,str(entry))
+                window_current_dir.chgat(selected_tab.selected_item_index, 0, curses.A_REVERSE)
             else:
                 window_current_dir.addstr(0,0,'empty',curses.color_pair(1))
 
@@ -73,28 +72,29 @@ def main(stdscr):
         key = stdscr.getkey()
         if key in config.K_QUIT:
             break
+
         elif key in config.K_LEFT:
             selected_tab.path = os.path.dirname(selected_tab.path)
-            """
-        elif key in keymap.K_RIGHT:
-            if(os.listdir(tabs[selected_tab].get_current_path())[:1]):
-                new_path = '/' +  os.listdir(tabs[selected_tab].get_current_path())[tabs[selected_tab].get_selected_item_index()]
-                if(tabs[selected_tab].get_current_path() != '/'):
-                    new_path = tabs[selected_tab].get_current_path() + new_path
-                if(os.path.isdir(new_path) and os.access(new_path, os.R_OK)):
-                    tabs[selected_tab].set_current_path(new_path)
-        elif key in keymap.K_UP:
-            if(tabs[selected_tab].get_selected_item_index() != 0):
-                tabs[selected_tab].set_selected_item_index(tabs[selected_tab].get_selected_item_index() - 1)
-        elif key in keymap.K_DOWN:
-            if(tabs[selected_tab].get_selected_item_index() < len(os.listdir(tabs[selected_tab].get_current_path()))-1):
-                tabs[selected_tab].set_selected_item_index(tabs[selected_tab].get_selected_item_index() + 1)
-        elif(key in keymap.K_TABS):
-            if tabs[int(key)-1] == None:
-                tabs[int(key)-1] = Tab(os.path.dirname(os.path.abspath(__file__)))
-                tabs = sorted(tabs, key=lambda k: k['index'])
-            selected_tab = int(key)-1
-        """
+
+        elif key in config.K_RIGHT:
+            if(os.path.isdir(selected_tab.selected_item_path)):
+                selected_tab.path = selected_tab.selected_item_path
+
+        elif key in config.K_UP:
+            selected_tab.selected_item_index -= 1
+
+        elif key in config.K_DOWN:
+            selected_tab.selected_item_index += 1
+
+        elif(key in config.K_TABS):
+            for tab in tabs:
+                tab['selected'] = False
+            if not any(tab.get('index', None) == int(key) for tab in tabs):
+                tabs.append({'index':int(key),'tab':Tab(selected_tab.path),'selected':True})
+            else:
+                for tab in tabs:
+                    if tab['index'] == int(key):
+                        tab['selected'] = True
 
 if __name__ == '__main__':
     curses.wrapper(main)

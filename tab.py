@@ -20,7 +20,7 @@ class Tab:
     @path.setter
     def path(self, new_path):
         self._saved_paths.append({'path':self._path,'index':self._selected_item_index})
-        #self.path = new_path
+        self._path = new_path
         self.selected_item_index = 0
         temp = self._saved_paths
         for idx,val in enumerate(self._saved_paths):
@@ -40,6 +40,6 @@ class Tab:
     @selected_item_index.setter
     def selected_item_index(self,value):
         # If directory is not empty
-        if os.listdir(self._path):
+        if os.listdir(self._path) and value >= 0 and value < len(os.listdir(self._path)):
             self._selected_item_index = value
             self.selected_item_path = os.path.join(self._path,os.listdir(self._path)[value])
