@@ -2,6 +2,7 @@ ToDo:
 File sorting(therefore rework indexing)
 failsave previous path loading in tab.py
 autoselect item based on current file path
+Add ftp/ssh feature
 
 Bugs:
 when in Empty directory preview shows Empty
