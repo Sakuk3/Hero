@@ -2,28 +2,44 @@ import os
 class Tab:
 
     def __init__(self, path):
-        self.current_path = path
+        self._path = path
+
+        if not os.listdir(self._path):
+            self._selected_item_index = None
+            self.selected_item_path = self._path
+        else:
+            self._selected_item_index = 0
+            self.selected_item_path = os.path.join(self._path,os.listdir(self._path)[0])
+
+        self._saved_paths = [{'path':path,'index':0}]
+
+    @property
+    def path(self):
+        return self._path
+
+    @path.setter
+    def path(self, new_path):
+        self._saved_paths.append({'path':self._path,'index':self._selected_item_index})
+        #self.path = new_path
         self.selected_item_index = 0
-        self.saved_paths = [{'path':path,'index':0}]
-
-    def get_current_path(self):
-        return self.current_path
-
-
-    def set_current_path(self,new_path):
-        self.saved_paths.append({'path':self.current_path,'index':self.selected_item_index})
-        self.current_path = new_path
-        self.selected_item_index = 0
-        temp = self.saved_paths
-        for idx,val in enumerate(self.saved_paths):
-            if val['path'] == self.current_path:
+        temp = self._saved_paths
+        for idx,val in enumerate(self._saved_paths):
+            if val['path'] == self.path:
                 self.selected_item_index = val['index']
-                self.saved_paths.pop(idx)
+                self._saved_paths.pop(idx)
+        if not os.listdir(self._path):
+            self._selected_item_index = None
+            self.selected_item_path = self._path
+        else:
+            self.selected_item_path = os.path.join(self._path,os.listdir(self._path)[self.selected_item_index])
 
+    @property
+    def selected_item_index(self):
+        return self._selected_item_index
 
-
-    def get_selected_item_index(self):
-        return self.selected_item_index
-
-    def set_selected_item_index(self,new_index):
-        self.selected_item_index = new_index
+    @selected_item_index.setter
+    def selected_item_index(self,value):
+        # If directory is not empty
+        if os.listdir(self._path):
+            self._selected_item_index = value
+            self.selected_item_path = os.path.join(self._path,os.listdir(self._path)[value])

@@ -109,10 +109,6 @@ def draw_screen(stdscr,tabs,selected_tab,window_parent_dir,window_current_dir,wi
             except PermissionError as e:
                 window_preview.addstr(0,0,'Permission denied',curses.color_pair(1))
 
-    # Draw tabs to screen
-    number = sum(1 for i in tabs if i != None)
-    for t in tabs:
-        pass
 
     stdscr.refresh()
     window_current_dir.refresh()
