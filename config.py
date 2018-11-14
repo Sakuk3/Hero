@@ -1,7 +1,8 @@
 # set to zero if it shudn't be displayed
-parent_dir_width    = 16
-current_dir_width   = 32
-preview_width       = 32
+# % of screen
+parent_dir_width    = 20
+current_dir_width   = 30
+preview_width       = 50
 
 border_width        = 1
 display_boxes = True

@@ -12,14 +12,17 @@ def main(stdscr):
 
     # Create windows
     if config.parent_dir_width != 0:
-        window_parent_dir = curses.newwin(  curses.LINES-1-config.border_width,     config.parent_dir_width,    config.border_width,  0)
+        window_parent_dir = curses.newwin(  curses.LINES-1-config.border_width,     round(config.parent_dir_width*curses.COLS/100),    config.border_width,  0)
     if config.current_dir_width != 0:
-        window_current_dir = curses.newwin( curses.LINES-1-config.border_width,     config.current_dir_width,   config.border_width,  config.parent_dir_width+config.border_width)
+        window_current_dir = curses.newwin( curses.LINES-1-config.border_width,     round(config.current_dir_width*curses.COLS/100),   config.border_width,  round(config.parent_dir_width*curses.COLS/100)+config.border_width)
     if config.preview_width != 0:
-        window_preview = curses.newwin(     curses.LINES-1-config.border_width,     config.preview_width,       config.border_width,  config.current_dir_width+config.preview_width+config.border_width)
+        window_preview = curses.newwin(     curses.LINES-1-config.border_width,     round(config.preview_width*curses.COLS/100),       config.border_width,  round(config.parent_dir_width*curses.COLS/100)+round(config.current_dir_width*curses.COLS/100)+config.border_width)
     while True:
         selected_tab = [tab['tab'] for tab in tabs if tab['selected'] == True][0]
         stdscr.clear()
+        window_parent_dir.clear()
+        window_current_dir.clear()
+        window_preview.clear()
 
         # display next path in top line
         if config.display_next_path:
@@ -28,9 +31,9 @@ def main(stdscr):
         # Draw tabs on top
         for idx,tab in enumerate(sorted(tabs,key=lambda x: int(x['index']))):
             if tab['selected'] == True:
-                stdscr.addstr(0,curses.COLS-len(tabs)+idx-1,str(tab['index']),curses.A_REVERSE)
+                stdscr.addstr(0,curses.COLS-len(tabs)+idx,str(tab['index']),curses.A_REVERSE)
             else:
-                stdscr.addstr(0,curses.COLS-len(tabs)+idx-1,str(tab['index']))
+                stdscr.addstr(0,curses.COLS-len(tabs)+idx,str(tab['index']))
 
         # Draw contetns of the parent directory
         if config.parent_dir_width != 0 and selected_tab.path != '/':
@@ -39,7 +42,7 @@ def main(stdscr):
                 window_parent_dir.addstr(idx,0,str(entry))
 
         # Draw contents of current directory
-        if config.parent_dir_width != 0:
+        if config.current_dir_width != 0:
             items = os.listdir(selected_tab.path)[:window_current_dir.getmaxyx()[0]]
             if(items):
                 for index,entry in enumerate(items):
@@ -61,6 +64,10 @@ def main(stdscr):
                         window_preview.addstr(0,0,'empty',curses.color_pair(1))
                 except PermissionError as e:
                     window_preview.addstr(0,0,'Permission denied',curses.color_pair(1))
+            else:
+                with open(selected_tab.selected_item_path) as f:
+                    for i in range(window_preview.getmaxyx()[0]-1):
+                        window_preview.addstr(i,0,f.readline()[:window_preview.getmaxyx()[1]])
 
 
         # Reload windows
