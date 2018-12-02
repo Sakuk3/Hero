@@ -8,6 +8,8 @@ border_width        = 1
 display_boxes = True
 display_next_path = True
 
+TXT_FILE_EXTENSIONS = ['.txt','.py']
+
 K_UP = ['KEY_UP', 'k','K']
 K_DOWN = ['KEY_DOWN', 'j','J']
 K_LEFT = ['KEY_LEFT', 'h','H']

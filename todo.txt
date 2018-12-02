@@ -1,17 +1,6 @@
 ToDo:
-File sorting(therefore rework indexing)
-failsave previous path loading in tab.py
-autoselect item based on current file path
+Diferent file sortings
 Add ftp/ssh feature
 
 Bugs:
-when in Empty directory preview shows Empty
-when in Empty directory change index causes crash:
-    Traceback (most recent call last):
-    File "hero.py", line 107, in <module>
-      curses.wrapper(main)
-    File "/usr/lib/python3.7/curses/__init__.py", line 94, in wrapper
-      return func(stdscr, *args, **kwds)
-    File "hero.py", line 91, in main
-      selected_tab.selected_item_index -= 1
-    TypeError: unsupported operand type(s) for -=: 'NoneType' and 'int'
+    After opening txt file terminal dosn restore fully after closing
