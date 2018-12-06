@@ -15,9 +15,11 @@ K_DOWN =    ['KEY_DOWN', 'j','J']
 K_LEFT =    ['KEY_LEFT', 'h','H']
 K_RIGHT =   ['KEY_RIGHT', 'l','L']
 
-K_QUIT =    ['q','Q']
-K_COPY =    ['c','C']
-K_PASTE =   ['p','P']
-K_DELETE =   ['d','D']
+K_QUIT =        ['q','Q']
+K_COPY =        ['c','C']
+K_PASTE =       ['p','P']
+K_DELETE =      ['d','D']
+K_RELOADE =     ['r','R']
 
+# Only numbers
 K_TABS = ['1','2','3','4','5','6','7','8','9']
