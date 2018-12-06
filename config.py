@@ -8,13 +8,16 @@ border_width        = 1
 display_boxes = True
 display_next_path = True
 
-TXT_FILE_EXTENSIONS = ['.txt','.py']
+TXT_FILE_EXTENSIONS = ['.txt','.py','.md']
 
-K_UP = ['KEY_UP', 'k','K']
-K_DOWN = ['KEY_DOWN', 'j','J']
-K_LEFT = ['KEY_LEFT', 'h','H']
-K_RIGHT = ['KEY_RIGHT', 'l','L']
+K_UP =      ['KEY_UP', 'k','K']
+K_DOWN =    ['KEY_DOWN', 'j','J']
+K_LEFT =    ['KEY_LEFT', 'h','H']
+K_RIGHT =   ['KEY_RIGHT', 'l','L']
 
-K_QUIT = ['q','Q']
+K_QUIT =    ['q','Q']
+K_COPY =    ['c','C']
+K_PASTE =   ['p','P']
+K_DELETE =   ['d','D']
 
 K_TABS = ['1','2','3','4','5','6','7','8','9']

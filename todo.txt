@@ -1,6 +1,7 @@
 ToDo:
 Diferent file sortings
 Add ftp/ssh feature
+check if item already exists when pasting
 
 Bugs:
     After opening txt file terminal dosn restore fully after closing
