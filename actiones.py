@@ -3,6 +3,7 @@ import shutil
 import os
 
 class actiones():
+
     def __init__(self):
         self.clipbord = None
 
@@ -32,9 +33,11 @@ class actiones():
                 else:
                     os.remove(path)
 
-    def create_folder(self,window_command,path,stdscr):
+    def create_folder(self,window_command,window_dir,path,stdscr):
         pass
-    def create_file(self,window_command,path,stdscr):
+
+    def create_file(self,window_command,window_dir,path,stdscr):
         pass
-    def rename(self,window_command,path,stdscr):
+
+    def rename(self,window_command,window_dir,path,stdscr):
         pass

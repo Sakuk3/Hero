@@ -122,6 +122,7 @@ def main(stdscr):
                 tabs.get_selected_tab().selected_item = actiones.clipbord
 
         elif key in config.K_DELETE:
+            # change selected item then deleate it
             cur_index = os.listdir(tabs.get_selected_tab().path).index(os.path.basename(tabs.get_selected_tab().selected_item))
             delete_path = tabs.get_selected_tab().selected_item
             if cur_index > 0:
@@ -131,7 +132,14 @@ def main(stdscr):
             else:
                 tabs.get_selected_tab().idx_up
 
+
             actiones.delete(window_command,delete_path,stdscr)
+
+        elif key in config.K_RENAME:
+            pass
+        elif key in config.K_CREATE:
+            pass
+
 
 """
     window:     The Window to draw on

@@ -1,7 +1,10 @@
-ToDo:
-Different file sortings
-Add ftp/ssh feature
+Missing features:
+    Different file sortings
+    Add ftp/ssh feature
 
+Missing actiones:
+    Create File/Folder
+    Rename File/Folder
 
 Bugs:
     After opening txt file terminal dosn restore fully after closing
