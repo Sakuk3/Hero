@@ -74,9 +74,12 @@ def main(stdscr):
                     window_preview.addstr(0,0,'Permission Denied',curses.color_pair(1))
 
             elif os.path.splitext(tabs.get_selected_tab().selected_item)[1] in config.TXT_FILE_EXTENSIONS:
-                with open(tabs.get_selected_tab().selected_item) as f:
-                    for i in range(window_preview.getmaxyx()[0]-1):
-                        window_preview.addstr(i,0,f.readline()[:window_preview.getmaxyx()[1]])
+                try:
+                    with open(tabs.get_selected_tab().selected_item) as f:
+                        for i in range(window_preview.getmaxyx()[0]-1):
+                            window_preview.addstr(i,0,f.readline()[:window_preview.getmaxyx()[1]])
+                except FileNotFoundError:
+                    window_preview.addstr(0,0,'ERROR')
 
         # Reload windows
         stdscr.refresh()
