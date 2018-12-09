@@ -48,7 +48,7 @@ def main(stdscr):
 
 
         # Draw contetns of the parent directory
-        if config.parent_dir_width != 0:
+        if config.parent_dir_width != 0 and tabs.get_selected_tab().path != '/':
             try:
                 list_directory(window_parent_dir,tabs.get_selected_tab().list_parent_dir(),os.path.basename(tabs.get_selected_tab().path))
             except PermissionError as e:
