@@ -5,3 +5,4 @@ check if item already exists when pasting
 
 Bugs:
     After opening txt file terminal dosn restore fully after closing
+    Crash on opening folders without propper permission

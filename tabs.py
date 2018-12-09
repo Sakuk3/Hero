@@ -60,6 +60,8 @@ class tab:
             if cur_index  < len(os.listdir(self.path))-1:
                 self.selected_item = os.path.join(self.path,os.listdir(self.path)[cur_index+1])
 
+
+
 class ftp_tab(tab):
     def __init__(self,path,index):
         super().__init__()

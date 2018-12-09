@@ -49,36 +49,30 @@ def main(stdscr):
 
         # Draw contetns of the parent directory
         if config.parent_dir_width != 0:
-            for idx,entry in enumerate(tabs.get_selected_tab().list_parent_dir()[:window_parent_dir.getmaxyx()[0]]):
-                if entry == os.path.basename(tabs.get_selected_tab().path):
-                    window_parent_dir.addstr(idx,0,str(entry),curses.A_REVERSE)
-                else:
-                    window_parent_dir.addstr(idx,0,str(entry))
+            try:
+                list_directory(window_parent_dir,tabs.get_selected_tab().list_parent_dir(),os.path.basename(tabs.get_selected_tab().path))
+            except PermissionError as e:
+                window_parent_dir.addstr(0,0,'Permission Denied',curses.color_pair(1))
 
         # Draw contents of current directory
         if config.current_dir_width != 0:
-            if tabs.get_selected_tab().list_current_dir():
-                for idx,entry in enumerate(tabs.get_selected_tab().list_current_dir()[:window_current_dir.getmaxyx()[0]]):
-                    if entry == os.path.basename(tabs.get_selected_tab().selected_item):
-                        window_current_dir.addstr(idx,0,str(entry),curses.A_REVERSE)
-                    else:
-                        window_current_dir.addstr(idx,0,str(entry))
-            else:
-                window_current_dir.addstr(0,0,'empty',curses.color_pair(1))
+            try:
+                if tabs.get_selected_tab().selected_item:
+                    list_directory(window_current_dir,tabs.get_selected_tab().list_current_dir(),os.path.basename(tabs.get_selected_tab().selected_item))
+                else:
+                    list_directory(window_current_dir,tabs.get_selected_tab().list_current_dir())
+            except PermissionError as e:
+                window_current_dir.addstr(0,0,'Permission Denied',curses.color_pair(1))
 
         # Draw preview
         if config.preview_width != 0 and tabs.get_selected_tab().selected_item:
             # preview for folders
             if os.path.isdir(tabs.get_selected_tab().selected_item):
                 try:
-                    if tabs.get_selected_tab().list_selected_dir():
-                        for index,entry in enumerate(tabs.get_selected_tab().list_selected_dir()[:window_preview.getmaxyx()[0]]):
-                            window_preview.addstr(index,0,str(entry))
-                    else:
-                        window_preview.addstr(0,0,'empty',curses.color_pair(1))
-
+                    list_directory(window_preview,tabs.get_selected_tab().list_selected_dir())
                 except PermissionError as e:
-                    window_preview.addstr(0,0,'Permission denied',curses.color_pair(1))
+                    window_preview.addstr(0,0,'Permission Denied',curses.color_pair(1))
+
             elif os.path.splitext(tabs.get_selected_tab().selected_item)[1] in config.TXT_FILE_EXTENSIONS:
                 with open(tabs.get_selected_tab().selected_item) as f:
                     for i in range(window_preview.getmaxyx()[0]-1):
@@ -118,7 +112,7 @@ def main(stdscr):
         # Actiones
         elif key in config.K_RELOADE:
             pass
-            
+
         elif key in config.K_COPY:
             actiones.copy(window_command,tabs.get_selected_tab().selected_item)
 
@@ -138,6 +132,24 @@ def main(stdscr):
                 tabs.get_selected_tab().idx_up
 
             actiones.delete(window_command,delete_path,stdscr)
+
+"""
+    window:     The Window to draw on
+    content:    A list of the contets of the directory to draw
+    hilighted:  The entry to hilight
+"""
+def list_directory(window,content,hilighted=None):
+    if len(content) == 0:
+        window.addstr(0,0,'empty',curses.color_pair(1))
+    if len(content) > 0:
+        for idx,entry in enumerate(content[:window.getmaxyx()[0]]):
+            if entry == hilighted:
+                window.addstr(idx,0,str(entry),curses.A_REVERSE)
+            else:
+                window.addstr(idx,0,str(entry))
+
+
+
 
 if __name__ == '__main__':
     curses.wrapper(main)
