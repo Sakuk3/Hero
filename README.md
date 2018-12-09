@@ -5,11 +5,6 @@ Terminal based file manager for linux
 Features
 --------
 * UTF-8 Support
-* Up to 9 different Tabs
-
-Features
---------
-* UTF-8 Support
 * Up to 9 Tabs
 
 Getting Started
