@@ -14,19 +14,19 @@ Features
 
 Getting Started
 --------
-'python hero.py'
+`python hero.py` 
 
 Usage
 --------
 Navigation:  
 
-Use the Arrow Keys or 'h' 'j' 'k' 'l'  
+&nbsp;&nbsp;Use the Arrow Keys or `h` `j` `k` `l` 
 
 Switch Tabs:  
 
-Use the Number Keys from 1-9  
+&nbsp;&nbsp;Use the Number Keys from 1-9  
 
-Perform actions  
+Perform actions:  
 
 
 | Key           | Action        |
