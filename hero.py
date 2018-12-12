@@ -27,6 +27,8 @@ def main(stdscr):
 
     window_path = curses.newwin(            1,                                      curses.COLS,                                       0,                     0)
     window_command = curses.newwin(         1,                                      curses.COLS,                                       curses.LINES-1,        0)
+    window_info = curses.newwin(            1,                                      curses.COLS,                                       curses.LINES-2,        0)
+
 
     while True:
         window_path.clear()
@@ -36,7 +38,7 @@ def main(stdscr):
 
         # display next path in top line
         if config.display_next_path:
-            window_path.addstr(0,0,tabs.get_selected_tab().path,curses.A_REVERSE)
+            window_path.addstr(0,0,os.stat(tabs.get_selected_tab().selected_item),curses.A_REVERSE)
 
 
         # Draw tabs on top
@@ -45,6 +47,10 @@ def main(stdscr):
                 window_path.addstr(0,curses.COLS-1-len(tabs.tab_list)+idx,str(tab.index),curses.A_REVERSE)
             else:
                 window_path.addstr(0,curses.COLS-1-len(tabs.tab_list)+idx,str(tab.index))
+
+        # Display File/Filder Info
+        if tabs.get_selected_tab().selected_item:
+            window_info.addstr(0,curses.COLS-1-len(tabs.tab_list)+idx,str(tab.index),curses.A_REVERSE)
 
 
         # Draw contetns of the parent directory
