@@ -15,12 +15,20 @@ class actiones():
     def paste(self,window_command,path):
         if self.clipbord:
             if not os.path.exists(os.path.join(path,os.path.basename(self.clipbord))):
-                shutil.copy2(self.clipbord,path)
-                window_command.addstr(0,0,'Pasted',curses.A_REVERSE)
+                if os.path.exists(self.clipbord):
+                    shutil.copy2(self.clipbord,path)
+                    window_command.addstr(0,0,'Pasted',curses.A_REVERSE)
+                    window_command.refresh()
+                    return True
+                else:
+                    window_command.addstr(0,0,'Item no longer exists',curses.A_REVERSE)
+                    #self.clipbord = None
             else:
                 window_command.addstr(0,0,'Item already exists',curses.A_REVERSE)
-        window_command.addstr(0,0,'No path in clipbord',curses.A_REVERSE)
+        else:
+            window_command.addstr(0,0,'No path in clipbord',curses.A_REVERSE)
         window_command.refresh()
+        return False
 
     def delete(self,window_command,path,stdscr):
         if path:

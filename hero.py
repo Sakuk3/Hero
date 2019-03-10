@@ -26,8 +26,8 @@ def main(stdscr):
         window_preview = curses.newwin(     curses.LINES-10-config.border_width,     round(config.preview_width*curses.COLS/100),       config.border_width,  round(config.parent_dir_width*curses.COLS/100)+round(config.current_dir_width*curses.COLS/100)+config.border_width)
 
     window_path = curses.newwin(            1,                                      curses.COLS,                                       0,                     0)
-    window_command = curses.newwin(         1,                                      curses.COLS,                                       curses.LINES-1,        0)
-    window_info = curses.newwin(            1,                                      curses.COLS,                                       curses.LINES-2,        0)
+    window_command = curses.newwin(         1,                                      curses.COLS,                                       curses.LINES-2,        0)
+    window_info = curses.newwin(            1,                                      curses.COLS,                                       curses.LINES-1,        0)
 
 
     while True:
@@ -35,10 +35,11 @@ def main(stdscr):
         window_parent_dir.clear()
         window_current_dir.clear()
         window_preview.clear()
+        window_info.clear()
 
         # display next path in top line
         if config.display_next_path:
-            window_path.addstr(0,0,os.stat(tabs.get_selected_tab().selected_item),curses.A_REVERSE)
+            window_path.addstr(0,0,tabs.get_selected_tab().selected_item,curses.A_REVERSE)
 
 
         # Draw tabs on top
@@ -50,7 +51,7 @@ def main(stdscr):
 
         # Display File/Filder Info
         if tabs.get_selected_tab().selected_item:
-            window_info.addstr(0,curses.COLS-1-len(tabs.tab_list)+idx,str(tab.index),curses.A_REVERSE)
+            window_info.addstr(0,0,'hallo',curses.A_REVERSE)
 
 
         # Draw contetns of the parent directory
@@ -127,8 +128,8 @@ def main(stdscr):
 
         elif key in config.K_PASTE:
             if actiones.clipbord:
-                actiones.paste(window_command,tabs.get_selected_tab().path)
-                tabs.get_selected_tab().selected_item = actiones.clipbord
+                if actiones.paste(window_command,tabs.get_selected_tab().path):
+                    tabs.get_selected_tab().selected_item = actiones.clipbord
 
         elif key in config.K_DELETE:
             # change selected item then deleate it
