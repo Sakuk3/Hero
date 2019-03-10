@@ -5,11 +5,18 @@ Terminal based file manager for linux
 Features
 --------
 * UTF-8 Support
-* Up to 9 Tabs
+* Multi Tabs
+
+Upcoming features
+--------
+* Renaming  of files
+* Creating files and folders
+* Installer
+* AUR availability
 
 Getting Started
 --------
-`python hero.py` 
+simply run `hero.py` 
 
 Usage
 --------
@@ -24,12 +31,12 @@ Switch Tabs:
 Perform actions:  
 
 
-| Key           | Action        |
-| ------------- |:-------------:|
-| q             | Quit          |
-| c             | Copy          |
-| p             | Paste         |
-| d             | Delete        |
-| r             | Reload        |
-| t             | Rename        |
-| k             | Create(File/Folder)|
+| Key           | Action                                |
+| ------------- |:-------------------------------------:|
+| q             | Quit                                  |
+| c             | Copy                                  |
+| p             | Paste                                 |
+| d             | Delete                                |
+| r             | Reload                                |
+| t             | Rename(NOT IMPLEMENTED)               |
+| k             | Create(File/Folder)(NOT IMPLEMENTED)  |
