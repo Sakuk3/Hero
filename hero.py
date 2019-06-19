@@ -38,7 +38,8 @@ def main(stdscr):
 
         # display next path in top line
         if config.display_next_path:
-            window_path.addstr(0,0,os.stat(tabs.get_selected_tab().selected_item),curses.A_REVERSE)
+            window_path.addstr(0,0,str(os.stat(tabs.get_selected_tab().selected_item)),curses.A_REVERSE)
+            window_path.addstr(0,0,tabs.get_selected_tab().path,curses.A_REVERSE)
 
 
         # Draw tabs on top
@@ -160,13 +161,10 @@ def list_directory(window,content,hilighted=None):
         window.addstr(0,0,'empty',curses.color_pair(1))
     if len(content) > 0:
         for idx,entry in enumerate(content[:window.getmaxyx()[0]]):
-            if entry == hilighted:
+            if idx == hilighted:
                 window.addstr(idx,0,str(entry),curses.A_REVERSE)
             else:
                 window.addstr(idx,0,str(entry))
-
-
-
 
 if __name__ == '__main__':
     curses.wrapper(main)
