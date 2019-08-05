@@ -14,14 +14,15 @@ class Window():
 
     def add_str(self,y,x,string,hilighted=False):
         string = str(string)
-        if y>=0 and y < self.y-10 and x>=0 and x < self.x-1:
-            try:
-                if hilighted:
-                    self.window.addstr(y,x,string,curses.A_REVERSE)
-                else:
-                    self.window.addstr(y,x,string)
-            except:
-                pass
+        try:
+            if hilighted:
+                self.window.addstr(y,x,string,curses.A_REVERSE)
+            else:
+                self.window.addstr(y,x,string)
+            self.refresh()
+        except:
+            pass
+
 
 
     def clear(self):
@@ -30,7 +31,8 @@ class Window():
     def refresh(self):
         self.window.refresh()
 
-    def display_directory(self,content,hilighted=0):
+    def display_list(self,content,hilighted=0):
+        self.clear()
         if len(content) == 0:
             self.window.addstr(0,0,'empty',curses.color_pair(1))
         else:
@@ -39,6 +41,7 @@ class Window():
                     self.add_str(idx,0,entry,True)
                 else:
                     self.add_str(idx,0,entry)
+        self.refresh()
 
 class Tabs:
     def __init__(self,path):
@@ -127,6 +130,8 @@ def main(stdscr):
     curses.init_pair(1,curses.COLOR_WHITE, curses.COLOR_MAGENTA)
     stdscr_window = Window(curses.LINES,curses.COLS,0,0)
     stdscr_window.window = stdscr
+    clipbord = None
+
     windows = {"stdscrv":stdscr_window}
 
     tabs = Tabs(os.path.dirname(os.path.abspath(__file__)))
@@ -154,14 +159,11 @@ def main(stdscr):
     windows["window_path"] = Window(1,curses.COLS,0,0)
     windows["window_command"] = Window(1,curses.COLS,curses.LINES-1,0)
     windows["window_info"] = Window(1,curses.COLS,curses.LINES-2,0)
-
+    for key,window in windows.items():
+        window.clear()
     # Main Loop
     while True:
-
-        # Clear all windows
-        for key,window in windows.items():
-            window.clear()
-
+        windows["window_path"].clear()
         # display next path in top line
         if config.display_next_path:
             windows["window_path"].add_str(
@@ -187,17 +189,17 @@ def main(stdscr):
         # Draw contetns of the parent directory
         try:
             if tabs.selected_tab.path != '/':
-                windows["window_parent_dir"].display_directory(
+                windows["window_parent_dir"].display_list(
                     tabs.selected_tab.parent_dir,
                     tabs.selected_tab.parent_dir.index(
                         os.path.basename(tabs.selected_tab.path)))
         except PermissionError as e:
-            window_parent_dir.addstr(0,0,'Permission Denied',curses.color_pair(1))
+            windows["window_parent_dir"].add_str(0,0,'Permission Denied',curses.color_pair(1))
 
 
         # Draw contents of current directory
         try:
-            windows["window_current_dir"].display_directory(
+            windows["window_current_dir"].display_list(
                 tabs.selected_tab.dir,
                 tabs.selected_tab.selected_item)
         except PermissionError as e:
@@ -208,24 +210,24 @@ def main(stdscr):
             # preview for folders
             if os.path.isdir(tabs.selected_tab.selected_item_path):
                 try:
-                    windows["window_preview"].display_directory(tabs.selected_tab.selected_dir,None)
+                    windows["window_preview"].display_list(tabs.selected_tab.selected_dir,None)
                 except PermissionError as e:
-                    window_preview.addstr(0,0,'Permission Denied',curses.color_pair(1))
+                    windows["window_preview"].add_str(0,0,'Permission Denied',curses.color_pair(1))
 
             elif os.path.splitext(tabs.selected_tab.selected_item_name)[1] in config.TXT_FILE_EXTENSIONS:
                 try:
                     with open(tabs.selected_tab.selected_item_path) as f:
+                        content = []
                         for i in range(windows["window_preview"].y):
-                            windows["window_preview"].add_str(i,0,f.readline())
+                            content.append(f.readline())
+                        windows["window_preview"].display_list(content,None)
                 except FileNotFoundError:
                     window_preview.addstr(0,0,'ERROR')
 
-        # refresh windows
-        for key,window in windows.items():
-            window.refresh()
-
         # Get last keypress
         key = stdscr.getkey()
+        windows["window_command"].clear()
+
 
         # End Programm
         if key in config.K_QUIT:
@@ -246,6 +248,38 @@ def main(stdscr):
 
         elif key in config.K_RIGHT:
             tabs.selected_tab.dir_next()
+
+        # Actiones
+        elif key in config.K_RELOADE:
+            pass
+
+        elif key in config.K_COPY:
+            clipbord = tabs.selected_tab.path
+            windows["window_command"].add_str(0,0,'Copied to clipbord',True)
+            windows["window_command"].refresh()
+        elif key in config.K_PASTE:
+            if clipbord:
+                actiones.paste(tabs.get_selected_tab().path)
+                tabs.get_selected_tab().selected_item = actiones.clipbord
+
+        elif key in config.K_DELETE:
+            # change selected item then deleate it
+            cur_index = os.listdir(tabs.get_selected_tab().path).index(os.path.basename(tabs.get_selected_tab().selected_item))
+            delete_path = tabs.get_selected_tab().selected_item
+            if cur_index > 0:
+                tabs.get_selected_tab().idx_up()
+            elif len(os.listdir(tabs.get_selected_tab().path)) == 1:
+                tabs.get_selected_tab().selected_item = None
+            else:
+                tabs.get_selected_tab().idx_up
+
+
+            actiones.delete(window_command,delete_path,stdscr)
+
+        elif key in config.K_RENAME:
+            pass
+        elif key in config.K_CREATE:
+            pass
 
 if __name__ == '__main__':
     curses.wrapper(main)
