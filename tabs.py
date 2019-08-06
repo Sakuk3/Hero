@@ -1,61 +1,68 @@
 import os
+from file import File, File_manager
 
-class tabs:
+class Tabs:
     def __init__(self,path):
-        self.tab_list = [tab(path,1)]
+        self.file_manager = File_manager()
+        self.tab_list = [Tab(self.file_manager.get_file(path),1,self.file_manager)]
 
-    def get_selected_tab(self):
+    @property
+    def selected_tab(self):
         return [x for x in self.tab_list if x.selected == True][0]
 
     def switch_tab(self,idx):
-        temp_path = self.get_selected_tab().path
-        self.get_selected_tab().selected = False
+        temp_path = self.selected_tab.path
+        self.selected_tab.selected = False
         if [x for x in self.tab_list if x.index == idx]:
             [x for x in self.tab_list if x.index == idx][0].selected = True
         else:
-            self.tab_list.append(tab(temp_path,idx))
+            self.tab_list.append(Tab(temp_path,idx,self.files))
         self.tab_list.sort(key=lambda x: x.index)
 
-class tab:
-    def __init__(self,path,index):
-        self.path = path
+class Tab:
+    def __init__(self,current_file,index,file_manager):
+        self._current_file = current_file
         self.selected = True
         self.index = index
-        self.selected_item = os.path.join(path,os.listdir(os.path.dirname(os.path.abspath(__file__)))[0])
+        self.file_manager = file_manager
 
-    def list_current_dir(self):
-        return os.listdir(self.path)
-
-    def list_parent_dir(self):
-        return os.listdir(os.path.dirname(self.path))
-
-    def list_selected_dir(self):
-        if os.path.isdir(self.selected_item):
-            return os.listdir(self.selected_item)
+        if self._current_file.content:
+            self._selected_file_index = 0
         else:
-            return[]
+            self._selected_file_index = None
 
-    def dir_back(self):
-        if self.path != '/':
-            self.selected_item = self.path
-            self.path = os.path.dirname(self.path)
+    @property
+    def current_file(self):
+        return self._current_file
 
-    def dir_next(self):
-        if self.selected_item and os.path.isdir(self.selected_item) and os.access(self.selected_item, os.R_OK):
-            self.path = self.selected_item
-            if os.listdir(self.path):
-                self.selected_item = os.path.join(self.path,os.listdir(self.path)[0])
+    @current_file.setter
+    def current_file(self, value):
+        if value:
+            if value == self._current_file.parent_dir:
+                self._selected_file_index = [file.full_name for file in self._current_file.parent_dir.content].index(self._current_file.full_name)
+                self._current_file = value
             else:
-                self.selected_item = False
+                self._current_file = value
+                self.selected_file_index = 0
 
-    def idx_up(self):
-        if self.selected_item:
-            cur_index = os.listdir(self.path).index(os.path.basename(self.selected_item))
-            if cur_index != 0:
-                self.selected_item = os.path.join(self.path,os.listdir(self.path)[cur_index-1])
+    @property
+    def selected_file(self):
+        if self._selected_file_index == None:
+            return None
+        else:
+            return self._current_file.content[self._selected_file_index]
 
-    def idx_down(self):
-        if self.selected_item:
-            cur_index = os.listdir(self.path).index(os.path.basename(self.selected_item))
-            if cur_index  < len(os.listdir(self.path))-1:
-                self.selected_item = os.path.join(self.path,os.listdir(self.path)[cur_index+1])
+    @property
+    def selected_file_index(self):
+        return self._selected_file_index
+
+    @selected_file_index.setter
+    def selected_file_index(self, value):
+        if self._current_file.content == []:
+            self._selected_file_index = None
+        elif value < 0:
+            self._selected_file_index = 0
+        elif value > len(self._current_file.content)-1:
+            self._selected_file_index = len(self._current_file.content)-1
+        else:
+            self._selected_file_index = value

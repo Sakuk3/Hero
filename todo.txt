@@ -11,4 +11,3 @@ Missing actiones:
     Rename File/Folder
 
 Bugs:
-    After opening txt file terminal dosn restore fully after closing
