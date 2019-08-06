@@ -25,11 +25,12 @@ class Window():
 
     def clear(self):
         self.window.clear()
+        self.window.refresh()
 
     def refresh(self):
         self.window.refresh()
 
-    def display_list(self,content,hilighted=0):
+    def display_list(self,content,hilighted=None):
         self.clear()
         if len(content) == 0:
             self.window.addstr(0,0,'empty',curses.color_pair(1))
@@ -39,4 +40,16 @@ class Window():
                     self.add_str(idx,0,entry,True,True)
                 else:
                     self.add_str(idx,0,entry)
+        self.refresh()
+
+    def display_dir(self,content,hilighted=None):
+        self.clear()
+        if len(content) == 0:
+            self.window.addstr(0,0,'empty',curses.color_pair(1))
+        else:
+            for idx,entry in enumerate(content[:self.y]):
+                if entry.full_name == hilighted:
+                    self.add_str(idx,0,entry.full_name,True,True)
+                else:
+                    self.add_str(idx,0,entry.full_name)
         self.refresh()
