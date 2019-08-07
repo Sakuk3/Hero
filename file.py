@@ -75,4 +75,12 @@ class File:
 
     @property
     def size(self):
-        return self._path
+        if self.is_dir:
+            return str(len(self.content))
+        else:
+            num = os.path.getsize(self._path)
+            for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
+                if abs(num) < 1024.0:
+                    return "%3.1f%s%s" % (num, unit, 'B')
+                num /= 1024.0
+            return "%.1f%s%s" % (num, 'Yi', 'B')

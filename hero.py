@@ -3,7 +3,6 @@
 from window import Window
 from tabs import Tab,Tabs
 import config
-import actiones
 
 import curses
 import os
@@ -21,34 +20,44 @@ class Hero():
         self.tabs = Tabs(os.path.dirname(os.path.abspath(__file__)))
         self.windows = {}
         self.stdscr = stdscr
-
         self.windows["stdscr"] = Window(curses.LINES,curses.COLS,0,0)
         self.windows["stdscr"].window = self.stdscr
 
-        if config.parent_dir_width != 0:
-            self.windows["window_parent_dir"] = Window(
-                curses.LINES-10-config.border_width,
-                round(config.parent_dir_width*curses.COLS/100),#
-                config.border_width,
-                0)
-        if config.current_dir_width != 0:
-            self.windows["window_current_dir"] = Window(
-                curses.LINES-10-config.border_width,
-                round(config.current_dir_width*curses.COLS/100),
-                config.border_width,
-                round(config.parent_dir_width*curses.COLS/100)+config.border_width)
-        if config.preview_width != 0:
-            self.windows["window_preview"] = Window(
-                curses.LINES-config.border_width,
-                round(config.preview_width*curses.COLS/100),
-                config.border_width,
-                round(config.parent_dir_width*curses.COLS/100)+round(config.current_dir_width*curses.COLS/100)+config.border_width)
+
+        self.windows["window_parent_dir"] = Window()
+        self.windows["window_current_dir"] = Window()
+        self.windows["window_preview"] = Window()
+        self.windows["window_topbar"] = Window()
+        self.windows["window_command"] = Window()
+        self.windows["window_info"] = Window()
+
+        self.resize()
+
+        self.mainloop()
+
+    def resize(self):
+        self.windows["window_parent_dir"] = Window(
+            curses.LINES-3,
+            round(config.parent_dir_width*curses.COLS/100),
+            1,
+            0)
+
+        self.windows["window_current_dir"] = Window(
+            curses.LINES-3,
+            round(config.current_dir_width*curses.COLS/100),
+            1,
+            self.windows["window_parent_dir"].y+1)
+
+        self.windows["window_preview"] = Window(
+            curses.LINES,
+            curses.COLS - (self.windows["window_current_dir"].y+self.windows["window_current_dir"].offset_y+1),
+            1,
+            self.windows["window_current_dir"].y+self.windows["window_current_dir"].offset_y+1)
 
         self.windows["window_topbar"] = Window(1,curses.COLS,0,0)
         self.windows["window_command"] = Window(1,curses.COLS,curses.LINES-1,0)
         self.windows["window_info"] = Window(1,curses.COLS,curses.LINES-2,0)
-
-        self.mainloop()
+        self.redraw()
 
     def mainloop(self):
         self.clear_all_windows()
@@ -61,7 +70,7 @@ class Hero():
 
         while True:
             # Get last keypress
-            key = self.stdscr.getkey()
+            key = self.get_next_keypress()
             self.windows["window_command"].clear()
 
             # End Programm
@@ -71,6 +80,7 @@ class Hero():
 
             elif key in config.K_TABS:
                 self.tabs.switch_tab(int(key))
+                self.redraw()
 
             elif key in config.K_UP:
                 self.tabs.selected_tab.selected_file_index -= 1
@@ -83,28 +93,20 @@ class Hero():
                 self.render_preview()
 
             elif key in config.K_LEFT:
-                if self.tabs.selected_tab.selected_file.parent_dir:
+                if self.tabs.selected_tab.current_file.parent_dir:
                     self.tabs.selected_tab.current_file = self.tabs.selected_tab.current_file.parent_dir
-                    self.render_topbar()
-                    self.render_parent_directory()
-                    self.render_current_directory()
-                    self.render_preview()
+                    self.redraw()
 
             elif key in config.K_RIGHT:
-                if self.tabs.selected_tab.selected_file.is_dir:
-                    self.tabs.selected_tab.current_file = self.tabs.selected_tab.selected_file
-                    self.render_topbar()
-                    self.render_parent_directory()
-                    self.render_current_directory()
-                    self.render_preview()
+                if self.tabs.selected_tab.selected_file:
+                    if self.tabs.selected_tab.selected_file.is_dir:
+                        self.tabs.selected_tab.current_file = self.tabs.selected_tab.selected_file
+                        self.redraw()
 
 
             # Actiones
             elif key in config.K_RELOADE:
-                self.render_topbar()
-                self.render_parent_directory()
-                self.render_current_directory()
-                self.render_preview()
+                self.redraw()
 
             elif key in config.K_COPY:
                 self.clipbord = self.tabs.selected_tab.selected_file
@@ -132,24 +134,26 @@ class Hero():
             elif key in config.K_DELETE:
                 # change selected item then deleate it
                 if self.tabs.selected_tab.selected_file:
-                    cur_index = self.tabs.selected_tab.selected_file_index
-                    if cur_index > 0:
+                    if self.tabs.selected_tab.selected_file_index > 0:
                         self.tabs.selected_tab.selected_file_index -=1
-                    elif len(os.listdir(self.tabs.selected_tab.path)) == 1:
+
+                    if len(self.tabs.selected_tab.current_file.content) == 1:
                         self.tabs.selected_tab.selected_file_index = None
-                    else:
-                        self.tabs.selected_tab.selected_file_index -=1
+
 
                     self.windows["window_command"].add_str(0,0,'Confirm deletion of {} (y/n)'.format(self.tabs.selected_tab.selected_file.full_name),True)
                     self.windows["window_command"].refresh()
-                    key = self.stdscr.getkey()
+                    key = self.get_next_keypress()
                     if key == 'y':
                         if self.tabs.selected_tab.selected_file.is_dir:
-                            shutil.rmtree(delete_path)
+                            shutil.rmtree(self.tabs.selected_tab.selected_file.path)
                         else:
-                            os.remove(delete_path)
+                            os.remove(self.tabs.selected_tab.selected_file.path)
 
                         self.render_current_directory()
+                        self.render_preview()
+                        self.render_parent_directory()
+
                         self.windows["window_command"].clear()
                         self.windows["window_command"].add_str(0,0,'Item deleated',True)
                         self.windows["window_command"].refresh()
@@ -162,9 +166,6 @@ class Hero():
 
             elif key in config.K_CREATE:
                 pass
-
-            self.windows["window_command"].add_str(0,0,str(self.tabs.selected_tab.selected_file.parent_dir),True)
-
 
     def render_parent_directory(self):
         # Draw contetns of the parent directory
@@ -181,9 +182,12 @@ class Hero():
     def render_current_directory(self):
         # Draw contents of current directory
         try:
-            self.windows["window_current_dir"].display_dir(
-                self.tabs.selected_tab.current_file.content,
-                self.tabs.selected_tab.selected_file.full_name)
+            if self.tabs.selected_tab.current_file.content:
+                self.windows["window_current_dir"].display_dir(
+                    self.tabs.selected_tab.current_file.content,
+                    self.tabs.selected_tab.selected_file.full_name)
+            else:
+                self.windows["window_current_dir"].add_str(0,0,'empty',True)
         except PermissionError as e:
             self.windows["window_current_dir"].add_str(0,0,'Permission Denied',True)
 
@@ -209,14 +213,13 @@ class Hero():
     def render_topbar(self):
         self.windows["window_topbar"].clear()
 
-        if config.display_next_path:
-            self.windows["window_topbar"].add_str(
-                0,
-                0,
-                "{}@{} {}".format(
-                getpass.getuser(),
-                socket.gethostname(),
-                self.tabs.selected_tab.current_file.path))
+        self.windows["window_topbar"].add_str(
+            0,
+            0,
+            "{}@{} {}".format(
+            getpass.getuser(),
+            socket.gethostname(),
+            self.tabs.selected_tab.current_file.path))
 
         for idx,tab in enumerate(self.tabs.tab_list):
             if tab.selected == True:
@@ -243,6 +246,21 @@ class Hero():
 
     def init_colors(sefl):
         curses.init_pair(1,curses.COLOR_WHITE, curses.COLOR_MAGENTA)
+
+    def redraw(self):
+        self.clear_all_windows()
+        self.render_topbar()
+        self.render_parent_directory()
+        self.render_current_directory()
+        self.render_preview()
+
+    def get_next_keypress(self):
+        while True:
+            keypress = self.stdscr.getkey()
+            if keypress == curses.KEY_RESIZE:
+                self.resize()
+            else:
+                return keypress
 
 if __name__ == '__main__':
     curses.wrapper(lambda stdscr: Hero(stdscr))

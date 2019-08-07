@@ -11,12 +11,12 @@ class Tabs:
         return [x for x in self.tab_list if x.selected == True][0]
 
     def switch_tab(self,idx):
-        temp_path = self.selected_tab.path
+        temp_file = self.selected_tab.current_file
         self.selected_tab.selected = False
         if [x for x in self.tab_list if x.index == idx]:
             [x for x in self.tab_list if x.index == idx][0].selected = True
         else:
-            self.tab_list.append(Tab(temp_path,idx,self.files))
+            self.tab_list.append(Tab(temp_file,idx,self.file_manager))
         self.tab_list.sort(key=lambda x: x.index)
 
 class Tab:
@@ -34,6 +34,7 @@ class Tab:
     @property
     def current_file(self):
         return self._current_file
+
 
     @current_file.setter
     def current_file(self, value):
