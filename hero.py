@@ -50,7 +50,7 @@ class Hero():
 
         self.windows["window_preview"] = Window(
             curses.LINES,
-            round(config.preview_width*curses.COLS/100),
+            curses.COLS - (self.windows["window_current_dir"].y+self.windows["window_current_dir"].offset_y+1),
             1,
             self.windows["window_current_dir"].y+self.windows["window_current_dir"].offset_y+1)
 
@@ -80,6 +80,7 @@ class Hero():
 
             elif key in config.K_TABS:
                 self.tabs.switch_tab(int(key))
+                self.redraw()
 
             elif key in config.K_UP:
                 self.tabs.selected_tab.selected_file_index -= 1
@@ -92,14 +93,15 @@ class Hero():
                 self.render_preview()
 
             elif key in config.K_LEFT:
-                if self.tabs.selected_tab.selected_file.parent_dir:
+                if self.tabs.selected_tab.current_file.parent_dir:
                     self.tabs.selected_tab.current_file = self.tabs.selected_tab.current_file.parent_dir
                     self.redraw()
 
             elif key in config.K_RIGHT:
-                if self.tabs.selected_tab.selected_file.is_dir:
-                    self.tabs.selected_tab.current_file = self.tabs.selected_tab.selected_file
-                    self.redraw()
+                if self.tabs.selected_tab.selected_file:
+                    if self.tabs.selected_tab.selected_file.is_dir:
+                        self.tabs.selected_tab.current_file = self.tabs.selected_tab.selected_file
+                        self.redraw()
 
 
             # Actiones
@@ -151,7 +153,7 @@ class Hero():
                         self.render_current_directory()
                         self.render_preview()
                         self.render_parent_directory()
-                        
+
                         self.windows["window_command"].clear()
                         self.windows["window_command"].add_str(0,0,'Item deleated',True)
                         self.windows["window_command"].refresh()
