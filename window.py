@@ -1,7 +1,7 @@
 import curses
 
 class Window():
-    def __init__(self,x,y,offset_x,offset_y):
+    def __init__(self,x=0,y=0,offset_x=0,offset_y=0):
         self.window = curses.newwin(x,y,offset_x,offset_y)
         self.x = x
         self.y = y
@@ -20,8 +20,6 @@ class Window():
             self.refresh()
         except:
             pass
-
-
 
     def clear(self):
         self.window.clear()
@@ -49,7 +47,7 @@ class Window():
         else:
             for idx,entry in enumerate(content[:self.y]):
                 if entry.full_name == hilighted:
-                    self.add_str(idx,0,entry.full_name,True,True)
+                    self.add_str(idx,0,entry.full_name.ljust(self.y-len(entry.size))+entry.size,True)
                 else:
-                    self.add_str(idx,0,entry.full_name)
+                    self.add_str(idx,0,entry.full_name.ljust(self.y-len(entry.size))+entry.size)
         self.refresh()

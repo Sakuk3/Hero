@@ -4,10 +4,6 @@ parent_dir_width    = 15
 current_dir_width   = 30
 preview_width       = 55
 
-border_width        = 1
-display_boxes       = True
-display_next_path   = True
-
 TXT_FILE_EXTENSIONS = ['.txt','.py','.md']
 
 K_UP =      ['KEY_UP', 'k','K']
