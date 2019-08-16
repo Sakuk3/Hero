@@ -190,7 +190,7 @@ class Hero():
             else:
                 self.windows["window_current_dir"].add_str(0,0,'empty',True)
         except PermissionError as e:
-            self.windows["window_current_dir"].add_str(0,0,'Permission Denied',True)
+            pass#self.windows["window_current_dir"].add_str(0,0,'Permission Denied',True)
 
     def render_preview(self):
         self.windows["window_preview"].clear()

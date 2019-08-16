@@ -1,5 +1,6 @@
 import os
 import errno
+import config
 from itertools import islice
 class File_manager:
     def __init__(self):
@@ -58,7 +59,11 @@ class File:
         if self.is_dir:
             content = []
             for file_name in os.listdir(self._path):
-                content.append(self._file_manager.get_file(os.path.join(self.path,file_name)))
+                if file_name.startswith("."):
+                    if config.SHOW_HIDDEN:
+                        content.append(self._file_manager.get_file(os.path.join(self.path,file_name)))
+                else:
+                    content.append(self._file_manager.get_file(os.path.join(self.path,file_name)))
             return content
         else:
             return []
@@ -84,7 +89,10 @@ class File:
     @property
     def size(self):
         if self.is_dir:
-            return str(len(self.content))
+            if config.SHOW_HIDDEN:
+                return str(len([file for file in os.listdir(self._path) if not file.startswith(".")]))
+            else:
+                return str(len(os.listdir(self._path)))
         else:
             num = os.path.getsize(self._path)
             for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
