@@ -40,14 +40,19 @@ class Window():
                     self.add_str(idx,0,entry)
         self.refresh()
 
-    def display_dir(self,content,hilighted=None):
+    def display_dir(self,content,hilighted=None,display_size=False):
         self.clear()
         if len(content) == 0:
             self.window.addstr(0,0,'empty',curses.color_pair(1))
         else:
             for idx,entry in enumerate(content[:self.y]):
-                if entry.full_name == hilighted:
-                    self.add_str(idx,0,entry.full_name.ljust(self.y-len(entry.size))+entry.size,True)
+                if display_size:
+                    name = entry.full_name.ljust(self.y)[:-len(entry.size)]+entry.size
                 else:
-                    self.add_str(idx,0,entry.full_name.ljust(self.y-len(entry.size))+entry.size)
+                    name = entry.full_name.ljust(self.y)
+
+                if entry.full_name == hilighted:
+                    self.add_str(idx,0,name,True)
+                else:
+                    self.add_str(idx,0,name)
         self.refresh()

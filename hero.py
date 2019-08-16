@@ -185,7 +185,8 @@ class Hero():
             if self.tabs.selected_tab.current_file.content:
                 self.windows["window_current_dir"].display_dir(
                     self.tabs.selected_tab.current_file.content,
-                    self.tabs.selected_tab.selected_file.full_name)
+                    self.tabs.selected_tab.selected_file.full_name,
+                    True)
             else:
                 self.windows["window_current_dir"].add_str(0,0,'empty',True)
         except PermissionError as e:
@@ -203,7 +204,7 @@ class Hero():
                     self.windows["window_preview"].add_str(0,0,'Permission Denied',curses.color_pair(1))
 
 
-            elif self.tabs.selected_tab.selected_file.extension in config.TXT_FILE_EXTENSIONS:
+            elif self.tabs.selected_tab.selected_file.preview:
                 try:
                     self.windows["window_preview"].display_list(self.tabs.selected_tab.selected_file.preview,None)
                 except FileNotFoundError:

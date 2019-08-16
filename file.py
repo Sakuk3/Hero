@@ -1,4 +1,5 @@
 import os
+import errno
 from itertools import islice
 class File_manager:
     def __init__(self):
@@ -7,11 +8,15 @@ class File_manager:
     def get_file(self,path):
         selected_file = [file for file in self.files if file.path == path]
         if selected_file:
-            return selected_file[0]
+            if os.path.exists(path):
+                return selected_file[0]
         else:
-            new_file = File(path,self)
-            self.files.append(new_file)
-            return new_file
+            if os.path.exists(path):
+                new_file = File(path,self)
+                self.files.append(new_file)
+                return new_file
+
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), path)
 
 class File:
     def __init__(self,path,file_manager):
@@ -61,8 +66,11 @@ class File:
     @property
     def preview(self):
         if self.is_file:
-            with open(self._path) as f:
-                return list(islice(f, 100))
+            try:
+                with open(self._path) as f:
+                    return list(islice(f, 100))
+            except UnicodeDecodeError:
+                pass # Fond non-text data
         else:
             return None
 
