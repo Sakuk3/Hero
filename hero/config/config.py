@@ -10,6 +10,7 @@ K_LEFT =    ['KEY_LEFT', 'h','H']
 K_RIGHT =   ['KEY_RIGHT', 'l','L']
 
 SHOW_HIDDEN = False
+
 # Actione Keys
 K_QUIT =        ['q','Q']
 K_COPY =        ['c','C']

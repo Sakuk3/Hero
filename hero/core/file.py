@@ -1,7 +1,8 @@
 import os
 import errno
-import config
+import config.config as config
 from itertools import islice
+
 class File_manager:
     def __init__(self):
         self.files = []
