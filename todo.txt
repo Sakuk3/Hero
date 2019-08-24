@@ -2,13 +2,12 @@ Missing features:
     Different file sortings
     Add ftp/ssh feature
     Add info list
-        Display total number of files and folders in current directory
         Display permissiones
 
 
 Missing actiones:
     Create File/Folder
     Rename File/Folder
+    Copy Folders
 
 Bugs:
-    After opening txt file terminal dosn restore fully after closing
