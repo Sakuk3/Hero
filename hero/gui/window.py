@@ -3,31 +3,23 @@ import curses
 class Window():
     def __init__(self,x=0,y=0,offset_x=0,offset_y=0):
         self.window = curses.newwin(x,y,offset_x,offset_y)
-        self._x = x
-        self._y = y
         self._offset_x = offset_x
         self._offset_y = offset_y
 
     @property
     def x(self):
-        return self._x
+        return self.window.getmaxyx()[0]
 
     @x.setter
     def x(self, value):
-        self._x = value
-        #del self.window
-        #self.window = curses.newwin(self._x,self._y,self._offset_x,self._offset_y)
         self.window.resize(self._x,self._y)
 
     @property
     def y(self):
-        return self._y
+        return self.window.getmaxyx()[1]
 
     @y.setter
     def y(self, value):
-        self._y = value
-        #del self.window
-        #self.window = curses.newwin(self._x,self._y,self._offset_x,self._offset_y)
         self.window.resize(self._x,self._y)
 
     @property
@@ -56,7 +48,7 @@ class Window():
 
 
     def add_str(self,y,x,string,hilighted=False,pad=False):
-        string = str(string)
+        string = str(string)[:self.y-x]
         if pad:
             string = string.ljust(self.y)
         try:

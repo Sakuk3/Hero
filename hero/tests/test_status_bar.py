@@ -5,33 +5,31 @@ import curses
 import os
 
 def main(stdscr):
+    curses.curs_set(0)
+    stdscr.refresh()
+
     file_path = os.path.dirname(os.path.abspath(__file__))
     tab_manager = Tab_manager(os.path.dirname(os.path.abspath(__file__)))
-
     file_manager = File_manager()
-    file_window = Statusbar(50,50,0,0,"sakuk","fff",file_path,tab_manager.tab_list)
-    file_window.draw()
 
-    file_window.refresh()
+    test = Statusbar(1,10,0,0,"sakuk","fff",file_path,tab_manager.tab_list)
 
     stdscr.getkey()
-    return
+
+    test.offset_x = 10
+    test.draw()
     stdscr.getkey()
 
-    file_window.offset_x = 10
-    file_viewer.draw()
+    test.offset_y = 10
+    test.draw()
     stdscr.getkey()
 
-    file_window.offset_y = 10
-    file_viewer.draw()
+    test.x = 1
+    test.draw()
     stdscr.getkey()
 
-    file_window.x = 10
-    file_viewer.draw()
-    stdscr.getkey()
-
-    file_window.y = 10
-    file_viewer.draw()
+    test.y = 50
+    test.draw()
     stdscr.getkey()
 
 

@@ -19,7 +19,6 @@ class Statusbar(Window):
                 self.username,
                 self.hostname,
                 self.path))
-
         for idx,tab in enumerate(self.tab_list):
             if tab.selected == True:
                 self.add_str(

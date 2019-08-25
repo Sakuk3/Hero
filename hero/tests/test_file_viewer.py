@@ -4,26 +4,29 @@ import curses
 import os
 
 def main(stdscr):
+    curses.curs_set(0)
+    stdscr.refresh()
+
     file_path = os.path.dirname(os.path.abspath(__file__))
-    stdscr.getkey()
     file_manager = File_manager()
-    file_window = File_viewer(50,50,0,0,file_manager.get_file(file_path))
+    test = File_viewer(10,10,0,0,file_manager.get_file(file_path))
+
     stdscr.getkey()
 
-    file_window.offset_x = 10
-    file_viewer.draw()
+    test.offset_x = 10
+    test.draw()
     stdscr.getkey()
 
-    file_window.offset_y = 10
-    file_viewer.draw()
+    test.offset_y = 10
+    test.draw()
     stdscr.getkey()
 
-    file_window.x = 10
-    file_viewer.draw()
+    test.x = 10
+    test.draw()
     stdscr.getkey()
 
-    file_window.y = 10
-    file_viewer.draw()
+    test.y = 10
+    test.draw()
     stdscr.getkey()
 
 

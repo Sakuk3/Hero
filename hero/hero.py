@@ -24,15 +24,46 @@ class Hero():
         self.stdscr = Window(curses.LINES,curses.COLS,0,0)
         self.stdscr.window = stdscr
 
+        self.stdscr.refresh()
+        self.parent_dir_widged = File_viewer(
+            self.stdscr.x-3,
+            round(config.parent_dir_width*self.stdscr.y/100),
+            1,
+            0,
+            self.tab_manager.selected_tab.current_file.parent_dir,self.tab_manager.selected_tab.current_file)
+        self.current_dir_widged = File_viewer(
+            self.stdscr.x-3,
+            round(config.current_dir_width*self.stdscr.y/100),
+            1,
+            self.parent_dir_widged.y,
+            self.tab_manager.selected_tab.current_file,self.tab_manager.selected_tab.selected_file,True)
+        self.preview_widged = File_viewer(
+            self.stdscr.x-3,
+            self.stdscr.y-self.parent_dir_widged.y-self.current_dir_widged.y-1,
+            1,
+            self.stdscr.y-(self.stdscr.y-self.parent_dir_widged.y-self.current_dir_widged.y-1),
+            self.tab_manager.selected_tab.selected_file)
+        self.statusbar = Statusbar(
+            1,
+            self.stdscr.y,
+            0,
+            0,
+            getpass.getuser(),socket.gethostname(),self.tab_manager.selected_tab.current_file.path,self.tab_manager.tab_list)
+        self.window_command = Window(
+            1,
+            self.stdscr.y,
+            self.stdscr.x-1,
+            0)
+        self.window_info = Window(
+            1,
+            self.stdscr.y,
+            self.stdscr.x-2,
+            0)
+        self.stdscr.refresh()
 
-        self.parent_dir_widged = File_viewer(0,0,0,0,self.tab_manager.selected_tab.current_file.parent_dir,self.tab_manager.selected_tab.current_file)
-        self.current_dir_widged = File_viewer(0,0,0,0,self.tab_manager.selected_tab.current_file,self.tab_manager.selected_tab.selected_file,True)
-        self.preview_widged = File_viewer(0,0,0,0,self.tab_manager.selected_tab.selected_file)
-        self.statusbar = Statusbar(0,0,0,0,getpass.getuser(),socket.gethostname(),self.tab_manager.selected_tab.current_file.path,self.tab_manager.tab_list)
-        self.window_command = Window()
-        self.window_info = Window()
 
-        self.resize()
+        #self.resize()
+        self.stdscr.refresh()
         self.mainloop()
 
     def resize(self):
@@ -82,51 +113,56 @@ class Hero():
 
             elif key in range(1,10):
                 self.tab_manager.switch_tab(int(key))
-                self.redraw()
+                self.statusbar.tab_list = self.tab_manager.tab_list
+                self.statusbar.draw()
 
             elif key in config.K_UP:
                 self.tab_manager.selected_tab.selected_file_index -= 1
                 self.current_dir_widged.selected_file = self.tab_manager.selected_tab.selected_file
-                self.current_dir_widged.refresh()
+                self.current_dir_widged.draw()
 
                 self.preview_widged.current_file = self.tab_manager.selected_tab.selected_file
-                self.preview_widged.refresh()
+                self.preview_widged.draw()
 
             elif key in config.K_DOWN:
                 self.tab_manager.selected_tab.selected_file_index += 1
 
                 self.current_dir_widged.selected_file = self.tab_manager.selected_tab.selected_file
-                self.current_dir_widged.refresh()
+                self.current_dir_widged.draw()
 
                 self.preview_widged.current_file = self.tab_manager.selected_tab.selected_file
-                self.preview_widged.refresh()
+                self.preview_widged.draw()
 
             elif key in config.K_LEFT:
                 if self.tab_manager.selected_tab.current_file.parent_dir:
-                    self.parent_dir_widged.current_file = self.tab_manager.selected_tab.selected_file.parent_dir
+                    self.tab_manager.selected_tab.current_file = self.tab_manager.selected_tab.current_file.parent_dir
+
+                    self.parent_dir_widged.current_file = self.tab_manager.selected_tab.current_file.parent_dir
                     self.parent_dir_widged.selected_file = self.tab_manager.selected_tab.current_file
-                    self.parent_dir_widged.refresh()
+                    self.parent_dir_widged.draw()
 
                     self.current_dir_widged.current_file = self.tab_manager.selected_tab.current_file
                     self.current_dir_widged.selected_file = self.tab_manager.selected_tab.selected_file
-                    self.current_dir_widged.refresh()
+                    self.current_dir_widged.draw()
 
                     self.preview_widged.current_file = self.tab_manager.selected_tab.selected_file
-                    self.preview_widged.refresh()
+                    self.preview_widged.draw()
 
             elif key in config.K_RIGHT:
                 if self.tab_manager.selected_tab.selected_file:
                     if self.tab_manager.selected_tab.selected_file.is_dir:
-                        self.parent_dir_widged.current_file = self.tab_manager.selected_tab.selected_file.parent_dir
+                        self.tab_manager.selected_tab.current_file = self.tab_manager.selected_tab.selected_file
+
+                        self.parent_dir_widged.current_file = self.tab_manager.selected_tab.current_file.parent_dir
                         self.parent_dir_widged.selected_file = self.tab_manager.selected_tab.current_file
-                        self.parent_dir_widged.refresh()
+                        self.parent_dir_widged.draw()
 
                         self.current_dir_widged.current_file = self.tab_manager.selected_tab.current_file
                         self.current_dir_widged.selected_file = self.tab_manager.selected_tab.selected_file
-                        self.current_dir_widged.refresh()
+                        self.current_dir_widged.draw()
 
                         self.preview_widged.current_file = self.tab_manager.selected_tab.selected_file
-                        self.preview_widged.refresh()
+                        self.preview_widged.draw()
 
 
             # Actiones
@@ -200,10 +236,10 @@ class Hero():
         curses.init_pair(1,curses.COLOR_WHITE, curses.COLOR_MAGENTA)
 
     def redraw(self):
-        self.parent_dir_widged.refresh()
-        self.current_dir_widged.refresh()
-        self.preview_widged.refresh()
-        self.statusbar.refresh()
+        self.parent_dir_widged.draw()
+        self.current_dir_widged.draw()
+        self.preview_widged.draw()
+        self.statusbar.draw()
         self.window_command.refresh()
         self.window_info.refresh()
 

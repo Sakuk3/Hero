@@ -7,6 +7,6 @@ class Window_child(Window):
 
     def draw(self):
         self.clear(False)
-        for i in range(self.y):
-            self.add_str(i,0,"+"*self.x)
+        for i in range(self.x):
+            self.add_str(i,0,"+"*self.y)
         self.refresh()
