@@ -1,8 +1,8 @@
 from gui.window import Window
 
 class Statusbar(Window):
-    def __init__(self,x,y,offset_x,offset_y,username,hostname,path,tab_list):
-        super().__init__(x,y,offset_x,offset_y)
+    def __init__(self,x,y,offset_x,offset_y,main_window,username,hostname,path,tab_list):
+        super().__init__(x,y,offset_x,offset_y,main_window)
         self.username = username
         self.hostname = hostname
         self.path = path

@@ -1,8 +1,14 @@
 import curses
 
 class Window():
-    def __init__(self,x=0,y=0,offset_x=0,offset_y=0):
-        self.window = curses.newwin(x,y,offset_x,offset_y)
+    def __init__(self,x=0,y=0,offset_x=0,offset_y=0,main_window=None):
+        if main_window:
+            self.window = main_window.window.subwin(x,y,offset_x,offset_y)
+            main_window.sub_windows.append(self)
+        else:
+            self.window = curses.newwin(x,y,offset_x,offset_y)
+
+        self.sub_windows = []
         self._x = x
         self._y = y
         self._offset_x = offset_x
@@ -78,12 +84,13 @@ class Window():
 
     def display_list(self,content,hilighted=None):
         self.clear()
-        if len(content) == 0:
-            self.window.addstr(0,0,'empty',curses.color_pair(1))
-        else:
-            for idx,entry in enumerate(content[:self.y]):
-                if idx == hilighted:
-                    self.add_str(idx,0,entry,True,True)
-                else:
-                    self.add_str(idx,0,entry)
-        self.refresh()
+        if content:
+            if len(content) == 0:
+                self.window.add_str(0,0,'empty')
+            else:
+                for idx,entry in enumerate(content[:self.x]):
+                    if idx == hilighted:
+                        self.add_str(idx,0,entry,True,True)
+                    else:
+                        self.add_str(idx,0,entry)
+            self.refresh()
