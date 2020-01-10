@@ -34,6 +34,7 @@ Perform actions:
 | Key           | Action                                |
 | ------------- |:-------------------------------------:|
 | q             | Quit                                  |
+| d             | Open debug menu                       |
 | c             | Copy(NOT IMPLEMENTED)                 |
 | p             | Paste(NOT IMPLEMENTED)                |
 | d             | Delete(NOT IMPLEMENTED)               |
