@@ -10,23 +10,59 @@ from highlight import highlight
 
 def _browse_up(model: models.Model,event: str):
     if model.tabs[model.selected_tab].current_file.is_dir:
+        selected_file_index = max(
+            model.tabs[model.selected_tab].current_file.content.index(
+                os.path.basename(model.tabs[model.selected_tab].selected_file.path)
+            )-1,
+            0
+        )
+
         return replace(model,
             tabs = [
                 tab
                 if tab.index != model.selected_tab else
                 replace(
                     tab,
-                    selected_file = file_from_path("/home/sakuk/Documents/Hero/funct_py")
+                    selected_file = file_from_path(
+                        os.path.join(
+                            model.tabs[model.selected_tab].current_file.path,
+                            model.tabs[model.selected_tab].current_file.content[selected_file_index]
+                        )
+                    )
                 )
                 for tab in model.tabs
             ]
         )
-
     else:
         return model
 
 def _browse_down(model: models.Model,event: str):
-    return model
+    if model.tabs[model.selected_tab].current_file.is_dir:
+        selected_file_index = min(
+            model.tabs[model.selected_tab].current_file.content.index(
+                os.path.basename(model.tabs[model.selected_tab].selected_file.path)
+            )+1,
+            len(model.tabs[model.selected_tab].current_file.content)-1
+        )
+
+        return replace(model,
+            tabs = [
+                tab
+                if tab.index != model.selected_tab else
+                replace(
+                    tab,
+                    selected_file = file_from_path(
+                        os.path.join(
+                            model.tabs[model.selected_tab].current_file.path,
+                            model.tabs[model.selected_tab].current_file.content[selected_file_index]
+                        )
+                    )
+                )
+                for tab in model.tabs
+            ]
+        )
+    else:
+        return model
 
 def _debug_up(model: models.Model,event: str):
     return replace(model,debug_offset=max(model.debug_offset-1, 0))
@@ -52,6 +88,9 @@ def _debug(model: models.Model,event: str):
         model= replace(model,debug_model_text=highlight(model_json,"json").split("\n"))
     else:
         model= replace(model,debug_model_text=model_json.split("\n"))
+
+    model= replace(model,debug_model_text=model.debug_model_text[0:len(model.debug_model_text)-1])
+
 
     model= replace(model,debug_model_length=len(model.debug_model_text))
     return model
@@ -88,9 +127,5 @@ modes = {
 def _mode_handeler(model: models.Model,event: str):
     replace(model,mode=1)
 
-def _update_model(model: models.Model,event: str):
-    return replace(model,prev_event=event)
-
 def EventHandler(model: models.Model,event: str):
-    model = modes.get(str(model.mode),_mode_handeler).get(event, _default)(model,event)
-    return _update_model(model,event)
+    return modes.get(str(model.mode),_mode_handeler).get(event, _default)(model,event)

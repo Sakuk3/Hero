@@ -2,6 +2,7 @@ from dataclasses import asdict
 import json
 import blesses
 import models
+import os
 
 def Render(model: models.Model):
     blesses.clear_terminal()
@@ -15,6 +16,8 @@ def Render(model: models.Model):
 def _render_view(model: models.Model,rows: int, cols: int):
     rows, cols = blesses.get_max_row_col()
     _render_statusbar(model,cols)
+    _render_current_directory(model,rows,cols)
+    _render_preview(model,rows,cols)
 
 def _render_statusbar(model: models.Model, cols: int):
     tab_list = "".join([blesses.inverse(tab.index) if tab.index == model.selected_tab else str(tab.index) for tab in model.tabs])
@@ -32,10 +35,41 @@ def _render_statusbar(model: models.Model, cols: int):
             cols-len(blesses.strip_esc(tab_list)),
             str(tab_list))
 
+def _render_current_directory(model: models.Model,rows: int, cols: int):
+    width = 30
+    blesses.display_list(
+        rows-2,
+        width,
+        0,
+        1,
+        model.tabs[model.selected_tab].current_file.content,
+        selected_item=os.path.basename(model.tabs[model.selected_tab].selected_file.path)
+    )
+
+def _render_preview(model: models.Model,rows: int, cols: int):
+    width = cols-30
+    if model.tabs[model.selected_tab].selected_file.is_dir:
+        blesses.display_list(
+            rows-2,
+            width,
+            30,
+            1,
+            model.tabs[model.selected_tab].selected_file.content,
+        )
+    else:
+        blesses.display_list(
+            rows-2,
+            width,
+            30,
+            1,
+            model.tabs[model.selected_tab].selected_file.content,
+            line_numbers=True
+        )
+
 def _render_debug(model: models.Model,rows: int, cols: int):
     rows, cols = blesses.get_max_row_col()
     blesses.clear_terminal()
-    blesses.display_list(rows,cols,0,0,model.debug_model_text,list_offsset=model.debug_offset)
+    blesses.display_list(rows,cols,0,0,model.debug_model_text,list_offsset=model.debug_offset,line_numbers=False)
 
 def _size_prettyfier(size: int):
     for unit in ['','K','M','G','T','P']:

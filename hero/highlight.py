@@ -18,5 +18,8 @@ def highlight(input: str,syntax_style: str):
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT)
-    output = p.communicate(input=input.encode())[0]
-    return output.decode()
+    output = p.communicate(input=input.encode())[0].decode()
+    return output
+
+def highlight_list(input: list,syntax_style: str):
+    return highlight("\n".join(input),syntax_style).split("\n")

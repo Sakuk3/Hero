@@ -47,7 +47,6 @@ class Model:
     mode:               int = 1 # 0 = debug
                                 # 1 = browse
     debug_offset:       int = 0
-    prev_event:         str = ""
     code_hilighting:    bool = True
     exit:               bool = False
     debug_model_length: int = 0

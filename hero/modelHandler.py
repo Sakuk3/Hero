@@ -1,5 +1,8 @@
-from models import Model, Tab, File
 import os
+from itertools import islice
+
+from models import Model, Tab, File
+from highlight import highlight_list
 
 
 def file_from_path(path):
@@ -9,9 +12,14 @@ def file_from_path(path):
         content = os.listdir(path)
         content_size = len(content)
     else:
-        with open(path,"r") as f:
-            content = [f.readline().rstrip()]
-        content_size = os.path.getsize(path)
+        try:
+            with open(path,"r") as f:
+                content = [line.rstrip() for line in islice(f, 100)]
+            content = highlight_list(content,os.path.splitext(path)[1][1:])
+            content_size = os.path.getsize(path)
+        except (IOError,PermissionError):
+            content = []
+            content_size = 0
 
     return File(
         path = path,

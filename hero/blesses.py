@@ -45,7 +45,7 @@ def clear_terminal():
 
 def add_str(row: int, col: int,string: str):
     _move_cursor(row,col)
-    sys.stdout.write(str(string)  + "\n")
+    sys.stdout.write(str(string)  + "\x1b[0m"+"\n")
 
 def get_max_row_col():
     return reversed(os.get_terminal_size())
@@ -63,14 +63,17 @@ def display_list(
     height_offset: int, 
     list, 
     selected_item=None,
-    list_offsset=0):
+    list_offsset=0,
+    line_numbers=False
+    ):
+    if line_numbers:
+        list = [(str(idx)+": ").rjust(4)+e for idx,e in enumerate(list)]
 
-    list = [str(idx)+": "+e for idx,e in enumerate(list)]
     for idx,entry in enumerate(list[list_offsset:height+list_offsset-1]):
         if entry == selected_item:
-            add_str(height_offset+idx,width_offset,inverse(entry))
+            add_str(height_offset+idx,width_offset,inverse(entry[:width]))
         else:
-            add_str(height_offset+idx,width_offset,entry)
+            add_str(height_offset+idx,width_offset,entry[:width])
 
 
 def inverse(string: str):
