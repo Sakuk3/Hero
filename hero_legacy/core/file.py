@@ -1,5 +1,8 @@
 import os
+import errno
+import config.config as config
 from itertools import islice
+
 class File_manager:
     def __init__(self):
         self.files = []
@@ -7,11 +10,15 @@ class File_manager:
     def get_file(self,path):
         selected_file = [file for file in self.files if file.path == path]
         if selected_file:
-            return selected_file[0]
+            if os.path.exists(path):
+                return selected_file[0]
         else:
-            new_file = File(path,self)
-            self.files.append(new_file)
-            return new_file
+            if os.path.exists(path):
+                new_file = File(path,self)
+                self.files.append(new_file)
+                return new_file
+
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), path)
 
 class File:
     def __init__(self,path,file_manager):
@@ -49,11 +56,18 @@ class File:
         return  os.path.isdir(self._path)
 
     @property
-    def content(self):
+    def content(self,limit=100,offset=0):
         if self.is_dir:
             content = []
-            for file_name in os.listdir(self._path):
-                content.append(self._file_manager.get_file(os.path.join(self.path,file_name)))
+            for file_name in os.listdir(self._path)[offset:limit]:
+                try:
+                    if file_name.startswith("."):
+                        if config.SHOW_HIDDEN:
+                            content.append(self._file_manager.get_file(os.path.join(self.path,file_name)))
+                    else:
+                        content.append(self._file_manager.get_file(os.path.join(self.path,file_name)))
+                except FileNotFoundError:
+                    pass
             return content
         else:
             return []
@@ -61,8 +75,11 @@ class File:
     @property
     def preview(self):
         if self.is_file:
-            with open(self._path) as f:
-                return list(islice(f, 100))
+            try:
+                with open(self._path) as f:
+                    return list(islice(f, 100))
+            except UnicodeDecodeError:
+                pass # Fond non-text data
         else:
             return None
 
@@ -76,7 +93,10 @@ class File:
     @property
     def size(self):
         if self.is_dir:
-            return str(len(self.content))
+            if config.SHOW_HIDDEN:
+                return str(len([file for file in os.listdir(self._path) if not file.startswith(".")]))
+            else:
+                return str(len(os.listdir(self._path)))
         else:
             num = os.path.getsize(self._path)
             for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
