@@ -28,19 +28,11 @@ def init_model(path: str,username: str,hostname: str):
     else:
         selected_file = None
 
-    # create parent file
-
-    if os.path.dirname(path) != path: # checks if it's the basepath
-        parent_file = file_from_path(os.path.dirname(path))
-    else:
-        parent_file = None
-
     return Model(
         tabs = [Tab(
             index = 0,
             current_file =  current_file,
             selected_file = selected_file,
-            parent_file =   parent_file,
 
         )],
         username = username,

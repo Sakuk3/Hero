@@ -36,16 +36,19 @@ class Tab:
     index:         int
     current_file:  File
     selected_file: File
-    parent_file:   File
-
 
 @dataclass(frozen=True)
 class Model:
-    tabs:          List[Tab]
-    username:      str
-    hostname:      str
-    selected_tab:  int = 0
-    clipbord:      str = None
-    mode:          int = 1  # 0 = debug
-    # 1 = browse
-    exit:          bool = False
+    tabs:               List[Tab]
+    username:           str
+    hostname:           str
+    selected_tab:       int = 0
+    clipbord:           str = None
+    mode:               int = 1 # 0 = debug
+                                # 1 = browse
+    debug_offset:       int = 0
+    prev_event:         str = ""
+    code_hilighting:    bool = True
+    exit:               bool = False
+    debug_model_length: int = 0
+    debug_model_text:   List[str] = None

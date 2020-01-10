@@ -1,0 +1,39 @@
+{
+    "tabs": [
+        {
+            "index": 0,
+            "current_file": {
+                "path": "/home/sakuk/Documents/Hero/hero",
+                "is_dir": true,
+                "content": [
+                    "main.py",
+                    "render.py",
+                    "__pycache__",
+                    "models.py",
+                    "eventHandler.py",
+                    "json_test.py",
+                    "modelHandler.py",
+                    "temp.txt",
+                    "blesses.py"
+                ],
+                "content_size": 9
+            },
+            "selected_file": {
+                "path": "/home/sakuk/Documents/Hero/hero/main.py",
+                "is_dir": false,
+                "content": [
+                    "import os"
+                ],
+                "content_size": 615
+            }
+        }
+    ],
+    "username": "sakuk",
+    "hostname": "fff",
+    "selected_tab": 0,
+    "clipbord": null,
+    "mode": 0,
+    "debug_offset": 0,
+    "prev_event": "d",
+    "exit": false
+}
