@@ -15,9 +15,10 @@ def Render(model: models.Model):
 
 def _render_view(model: models.Model,rows: int, cols: int):
     rows, cols = blesses.get_max_row_col()
-    _render_statusbar(model,cols)
     _render_current_directory(model,rows,cols)
     _render_preview(model,rows,cols)
+    _render_statusbar(model,cols)
+
 
 def _render_statusbar(model: models.Model, cols: int):
     tab_list = "".join([blesses.inverse(tab.index) if tab.index == model.selected_tab else str(tab.index) for tab in model.tabs])
@@ -37,31 +38,43 @@ def _render_statusbar(model: models.Model, cols: int):
 
 def _render_current_directory(model: models.Model,rows: int, cols: int):
     width = 30
-    blesses.display_list(
+    blesses.display_box(
         rows-2,
         width,
         0,
-        1,
+        3,
+    )
+    blesses.display_list(
+        rows-2,
+        width-2,
+        2,
+        3,
         model.tabs[model.selected_tab].current_file.content,
         selected_item=os.path.basename(model.tabs[model.selected_tab].selected_file.path)
     )
 
 def _render_preview(model: models.Model,rows: int, cols: int):
     width = cols-30
+    blesses.display_box(
+        rows-2,
+        width,
+        30,
+        2,
+    )
     if model.tabs[model.selected_tab].selected_file.is_dir:
         blesses.display_list(
             rows-2,
             width,
-            30,
-            1,
+            31,
+            2,
             model.tabs[model.selected_tab].selected_file.content,
         )
     else:
         blesses.display_list(
             rows-2,
             width,
-            30,
-            1,
+            31,
+            2,
             model.tabs[model.selected_tab].selected_file.content,
             line_numbers=True
         )

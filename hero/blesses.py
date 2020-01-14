@@ -82,6 +82,43 @@ def inverse(string: str):
 def strip_esc(string: str):
     return ansi_escape.sub('', string)
 
+def display_box(
+    height: int, 
+    width: int, 
+    width_offset: int, 
+    height_offset: int,
+    ):
+    box_borders = {
+		"topLeft": "╔",
+		"topRight": "╗",
+		"bottomRight": "╝",
+		"bottomLeft": "╚",
+		"vertical": "║",
+		"horizontal": "═"
+	}
+    # Top Line
+    add_str(
+        height_offset,
+        width_offset,
+        box_borders["topLeft"]+box_borders["horizontal"]*(width-2)+box_borders["topRight"]
+    )
+    add_str(
+        height_offset+height,
+        width_offset,
+        box_borders["bottomLeft"]+box_borders["horizontal"]*(width-2)+box_borders["bottomRight"]
+    )
+    for line_index in range(height-2):
+        add_str(
+            height_offset+line_index,
+            width_offset,
+            box_borders["vertical"]
+        )
+        add_str(
+            height_offset+line_index,
+            width_offset+width,
+            box_borders["vertical"]
+        )
+
 """
     Initiates the terminal for curses like use.
     Calls function
@@ -98,7 +135,8 @@ def wrapper(funct: "function to execute"):
         _restore_terminal(prev_terminal_state)
         if error: 
             print(error)
-  
+
+
 def demo():
     while True:
         add_str(0,0,str(get_key()))
