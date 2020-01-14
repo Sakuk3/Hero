@@ -16,7 +16,7 @@ Upcoming features
 
 Getting Started
 --------
-simply run `hero.py` 
+simply run `main.py` 
 
 Usage
 --------
@@ -34,9 +34,10 @@ Perform actions:
 | Key           | Action                                |
 | ------------- |:-------------------------------------:|
 | q             | Quit                                  |
-| c             | Copy                                  |
-| p             | Paste                                 |
-| d             | Delete                                |
-| r             | Reload                                |
+| d             | Open debug menu                       |
+| c             | Copy(NOT IMPLEMENTED)                 |
+| p             | Paste(NOT IMPLEMENTED)                |
+| d             | Delete(NOT IMPLEMENTED)               |
+| r             | Reload(NOT IMPLEMENTED)               |
 | t             | Rename(NOT IMPLEMENTED)               |
 | k             | Create(File/Folder)(NOT IMPLEMENTED)  |

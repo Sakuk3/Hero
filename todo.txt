@@ -1,4 +1,5 @@
 Missing features:
+    Add selected file index
     Different file sortings
     Add ftp/ssh feature
     Add info list

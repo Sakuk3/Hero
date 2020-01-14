@@ -4,12 +4,12 @@ parent_dir_width    = 15
 current_dir_width   = 30
 preview_width       = 55
 
-TXT_FILE_EXTENSIONS = ['.txt','.py','.md']
-
 K_UP =      ['KEY_UP', 'k','K']
 K_DOWN =    ['KEY_DOWN', 'j','J']
 K_LEFT =    ['KEY_LEFT', 'h','H']
 K_RIGHT =   ['KEY_RIGHT', 'l','L']
+
+SHOW_HIDDEN = False
 
 # Actione Keys
 K_QUIT =        ['q','Q']
