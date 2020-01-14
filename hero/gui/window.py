@@ -12,7 +12,7 @@ class Window():
 
     @x.setter
     def x(self, value):
-        self.window.resize(self._x,self._y)
+        self.window.resize(self.x,self.y)
 
     @property
     def y(self):
@@ -20,7 +20,7 @@ class Window():
 
     @y.setter
     def y(self, value):
-        self.window.resize(self._x,self._y)
+        self.window.resize(self.x,self.y)
 
     @property
     def offset_x(self):

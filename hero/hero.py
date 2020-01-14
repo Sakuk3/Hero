@@ -31,34 +31,40 @@ class Hero():
             1,
             0,
             self.tab_manager.selected_tab.current_file.parent_dir,self.tab_manager.selected_tab.current_file)
+
         self.current_dir_widged = File_viewer(
             self.stdscr.x-3,
             round(config.current_dir_width*self.stdscr.y/100),
             1,
             self.parent_dir_widged.y,
             self.tab_manager.selected_tab.current_file,self.tab_manager.selected_tab.selected_file,True)
+
         self.preview_widged = File_viewer(
             self.stdscr.x-3,
             self.stdscr.y-self.parent_dir_widged.y-self.current_dir_widged.y-1,
             1,
             self.stdscr.y-(self.stdscr.y-self.parent_dir_widged.y-self.current_dir_widged.y-1),
             self.tab_manager.selected_tab.selected_file)
+
         self.statusbar = Statusbar(
             1,
             self.stdscr.y,
             0,
             0,
             getpass.getuser(),socket.gethostname(),self.tab_manager.selected_tab.current_file.path,self.tab_manager.tab_list)
+
         self.window_command = Window(
             1,
             self.stdscr.y,
             self.stdscr.x-1,
             0)
+
         self.window_info = Window(
             1,
             self.stdscr.y,
             self.stdscr.x-2,
             0)
+
         self.stdscr.refresh()
 
 
@@ -67,35 +73,22 @@ class Hero():
         self.mainloop()
 
     def resize(self):
-        self.parent_dir_widged.x = curses.LINES-3
-        self.parent_dir_widged.y = round(config.parent_dir_width*curses.COLS/100)
-        self.parent_dir_widged.offset_x = 1
-        self.parent_dir_widged.offset_y = 0
+        self.parent_dir_widged.x = self.stdscr.x-3
+        self.parent_dir_widged.y = round(config.parent_dir_width*self.stdscr.y/100)
 
-        self.current_dir_widged.x = curses.LINES-3
-        self.current_dir_widged.y = round(config.current_dir_width*curses.COLS/100)
-        self.current_dir_widged.offset_x = 1
-        self.current_dir_widged.offset_y = self.parent_dir_widged.y+1
+        self.current_dir_widged.x = self.stdscr.x-3
+        self.current_dir_widged.y = round(config.current_dir_width*self.stdscr.y/100)
+        self.current_dir_widged.offset_y = self.parent_dir_widged.y
 
-        self.preview_widged.x = curses.LINES-1
-        self.preview_widged.y = round(config.parent_dir_width*curses.COLS/100)
-        self.preview_widged.offset_x = 1
-        self.preview_widged.offset_y = curses.COLS - (self.current_dir_widged.y+self.current_dir_widged.offset_y+1)
+        self.preview_widged.x = self.stdscr.x-3
+        self.preview_widged.y = self.stdscr.y-self.parent_dir_widged.y-self.current_dir_widged.y-1
+        self.preview_widged.offset_y = self.stdscr.y-(self.stdscr.y-self.parent_dir_widged.y-self.current_dir_widged.y-1)
 
-        self.statusbar.x = 1
-        self.statusbar.y = curses.COLS
-        self.statusbar.offset_x = 0
-        self.statusbar.offset_y = 0
+        self.window_command.y = self.stdscr.y
+        self.window_command.offset_x = self.stdscr.x-1
 
-        self.window_command.x = 1
-        self.window_command.y = curses.COLS
-        self.window_command.offset_x = curses.LINES-1
-        self.window_command.offset_y = 0
-
-        self.window_info.x = 1
-        self.window_info.y = curses.COLS
-        self.window_info.offset_x = curses.LINES-2
-        self.window_info.offset_y = 0
+        self.window_info.y = self.stdscr.y
+        self.window_info.offset_x = self.stdscr.x-2
 
         self.redraw()
 
@@ -111,10 +104,23 @@ class Hero():
                 curses.endwin()
                 break
 
-            elif key in range(1,10):
+            elif key in [str(i) for i in range(1,10)]:
                 self.tab_manager.switch_tab(int(key))
                 self.statusbar.tab_list = self.tab_manager.tab_list
+                self.statusbar.path = self.tab_manager.selected_tab.current_file.path
                 self.statusbar.draw()
+
+
+                self.parent_dir_widged.current_file = self.tab_manager.selected_tab.current_file.parent_dir
+                self.parent_dir_widged.selected_file = self.tab_manager.selected_tab.current_file
+                self.parent_dir_widged.draw()
+
+                self.current_dir_widged.current_file = self.tab_manager.selected_tab.current_file
+                self.current_dir_widged.selected_file = self.tab_manager.selected_tab.selected_file
+                self.current_dir_widged.draw()
+
+                self.preview_widged.current_file = self.tab_manager.selected_tab.selected_file
+                self.preview_widged.draw()
 
             elif key in config.K_UP:
                 self.tab_manager.selected_tab.selected_file_index -= 1
@@ -236,18 +242,22 @@ class Hero():
         curses.init_pair(1,curses.COLOR_WHITE, curses.COLOR_MAGENTA)
 
     def redraw(self):
+        self.window_info.add_str(0,0,self.stdscr.y)
         self.parent_dir_widged.draw()
         self.current_dir_widged.draw()
         self.preview_widged.draw()
         self.statusbar.draw()
         self.window_command.refresh()
         self.window_info.refresh()
+        self.stdscr.refresh()
 
     def get_next_keypress(self):
         while True:
             keypress = self.stdscr.window.getkey()
-            if keypress == curses.KEY_RESIZE:
-                self.resize()
+
+            if keypress == "KEY_RESIZE":
+                pass
+                #self.resize()
             else:
                 return keypress
 
