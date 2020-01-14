@@ -56,15 +56,18 @@ class File:
         return  os.path.isdir(self._path)
 
     @property
-    def content(self):
+    def content(self,limit=100,offset=0):
         if self.is_dir:
             content = []
-            for file_name in os.listdir(self._path):
-                if file_name.startswith("."):
-                    if config.SHOW_HIDDEN:
+            for file_name in os.listdir(self._path)[offset:limit]:
+                try:
+                    if file_name.startswith("."):
+                        if config.SHOW_HIDDEN:
+                            content.append(self._file_manager.get_file(os.path.join(self.path,file_name)))
+                    else:
                         content.append(self._file_manager.get_file(os.path.join(self.path,file_name)))
-                else:
-                    content.append(self._file_manager.get_file(os.path.join(self.path,file_name)))
+                except FileNotFoundError:
+                    pass
             return content
         else:
             return []

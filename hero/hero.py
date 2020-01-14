@@ -14,14 +14,16 @@ import socket
 import getpass
 import shutil
 
+
 class Hero():
-    def __init__(self,stdscr):
+    def __init__(self, stdscr):
         curses.curs_set(0)
-        curses.init_pair(1,curses.COLOR_WHITE, curses.COLOR_MAGENTA)
+        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_MAGENTA)
 
         self.clipbord = None
-        self.tab_manager = Tab_manager(os.path.dirname(os.path.abspath(__file__)))
-        self.stdscr = Window(curses.LINES,curses.COLS,0,0)
+        self.tab_manager = Tab_manager(
+            os.path.dirname(os.path.abspath(__file__)))
+        self.stdscr = Window(curses.LINES, curses.COLS, 0, 0)
         self.stdscr.window = stdscr
 
         self.stdscr.refresh()
@@ -30,20 +32,21 @@ class Hero():
             round(config.parent_dir_width*self.stdscr.y/100),
             1,
             0,
-            self.tab_manager.selected_tab.current_file.parent_dir,self.tab_manager.selected_tab.current_file)
+            self.tab_manager.selected_tab.current_file.parent_dir, self.tab_manager.selected_tab.current_file)
 
         self.current_dir_widged = File_viewer(
             self.stdscr.x-3,
             round(config.current_dir_width*self.stdscr.y/100),
             1,
             self.parent_dir_widged.y,
-            self.tab_manager.selected_tab.current_file,self.tab_manager.selected_tab.selected_file,True)
+            self.tab_manager.selected_tab.current_file, self.tab_manager.selected_tab.selected_file, True)
 
         self.preview_widged = File_viewer(
             self.stdscr.x-3,
             self.stdscr.y-self.parent_dir_widged.y-self.current_dir_widged.y-1,
             1,
-            self.stdscr.y-(self.stdscr.y-self.parent_dir_widged.y-self.current_dir_widged.y-1),
+            self.stdscr.y-(self.stdscr.y-self.parent_dir_widged.y -
+                           self.current_dir_widged.y-1),
             self.tab_manager.selected_tab.selected_file)
 
         self.statusbar = Statusbar(
@@ -51,7 +54,7 @@ class Hero():
             self.stdscr.y,
             0,
             0,
-            getpass.getuser(),socket.gethostname(),self.tab_manager.selected_tab.current_file.path,self.tab_manager.tab_list)
+            getpass.getuser(), socket.gethostname(), self.tab_manager.selected_tab.current_file.path, self.tab_manager.tab_list)
 
         self.window_command = Window(
             1,
@@ -67,28 +70,46 @@ class Hero():
 
         self.stdscr.refresh()
 
-
-        #self.resize()
+        # self.resize()
         self.stdscr.refresh()
         self.mainloop()
 
     def resize(self):
-        self.parent_dir_widged.x = self.stdscr.x-3
-        self.parent_dir_widged.y = round(config.parent_dir_width*self.stdscr.y/100)
+        self.stdscr.x = curses.LINES
+        self.stdscr.y = curses.COLS
+        return None
+        self.parent_dir_widged.x = curses.LINES-3
+        self.parent_dir_widged.y = round(
+            config.parent_dir_width*curses.COLS/100)
+        self.parent_dir_widged.offset_x = 1
+        self.parent_dir_widged.offset_y = 0
 
-        self.current_dir_widged.x = self.stdscr.x-3
-        self.current_dir_widged.y = round(config.current_dir_width*self.stdscr.y/100)
-        self.current_dir_widged.offset_y = self.parent_dir_widged.y
+        self.current_dir_widged.x = curses.LINES-3
+        self.current_dir_widged.y = round(
+            config.current_dir_width*curses.COLS/100)
+        self.current_dir_widged.offset_x = 1
+        self.current_dir_widged.offset_y = self.parent_dir_widged.y+1
 
-        self.preview_widged.x = self.stdscr.x-3
-        self.preview_widged.y = self.stdscr.y-self.parent_dir_widged.y-self.current_dir_widged.y-1
-        self.preview_widged.offset_y = self.stdscr.y-(self.stdscr.y-self.parent_dir_widged.y-self.current_dir_widged.y-1)
+        self.preview_widged.x = curses.LINES-1
+        self.preview_widged.y = round(config.parent_dir_width*curses.COLS/100)
+        self.preview_widged.offset_x = 1
+        self.preview_widged.offset_y = curses.COLS - \
+            (self.current_dir_widged.y+self.current_dir_widged.offset_y+1)
 
-        self.window_command.y = self.stdscr.y
-        self.window_command.offset_x = self.stdscr.x-1
+        self.statusbar.x = 1
+        self.statusbar.y = curses.COLS
+        self.statusbar.offset_x = 0
+        self.statusbar.offset_y = 0
 
-        self.window_info.y = self.stdscr.y
-        self.window_info.offset_x = self.stdscr.x-2
+        self.window_command.x = 1
+        self.window_command.y = curses.COLS
+        self.window_command.offset_x = curses.LINES-1
+        self.window_command.offset_y = 0
+
+        self.window_info.x = 1
+        self.window_info.y = curses.COLS
+        self.window_info.offset_x = curses.LINES-2
+        self.window_info.offset_y = 0
 
         self.redraw()
 
@@ -98,18 +119,18 @@ class Hero():
             # Get last keypress
             key = self.get_next_keypress()
             self.window_command.clear()
-
+            self.window_info.add_str(0, 0, str(key))
+            self.window_info.refresh()
             # End Programm
             if key in config.K_QUIT:
                 curses.endwin()
                 break
 
-            elif key in [str(i) for i in range(1,10)]:
+            elif key in [str(i) for i in range(1, 10)]:
                 self.tab_manager.switch_tab(int(key))
                 self.statusbar.tab_list = self.tab_manager.tab_list
                 self.statusbar.path = self.tab_manager.selected_tab.current_file.path
                 self.statusbar.draw()
-
 
                 self.parent_dir_widged.current_file = self.tab_manager.selected_tab.current_file.parent_dir
                 self.parent_dir_widged.selected_file = self.tab_manager.selected_tab.current_file
@@ -170,7 +191,6 @@ class Hero():
                         self.preview_widged.current_file = self.tab_manager.selected_tab.selected_file
                         self.preview_widged.draw()
 
-
             # Actiones
             elif key in config.K_RELOADE:
                 self.redraw()
@@ -178,55 +198,64 @@ class Hero():
             elif key in config.K_COPY:
                 if self.tab_manager.selected_tab.selected_file:
                     self.clipbord = self.tab_manager.selected_tab.selected_file
-                    self.window_command.add_str(0,0,'Copied to clipbord',True)
+                    self.window_command.add_str(
+                        0, 0, 'Copied to clipbord', True)
                     self.window_command.refresh()
                 else:
-                    self.window_command.add_str(0,0,'No location selected',True)
+                    self.window_command.add_str(
+                        0, 0, 'No location selected', True)
                     self.window_command.refresh()
 
             elif key in config.K_PASTE:
                 if self.clipbord:
-                    if not os.path.exists(os.path.join(self.tab_manager.selected_tab.selected_file.path,self.clipbord.full_name)):
+                    if not os.path.exists(os.path.join(self.tab_manager.selected_tab.selected_file.path, self.clipbord.full_name)):
                         if os.path.exists(self.clipbord.path):
-                            shutil.copy2(self.clipbord.path,self.tab_manager.selected_tab.current_file.path)
-                            self.window_command.add_str(0,0,'Pasted',True)
+                            shutil.copy2(
+                                self.clipbord.path, self.tab_manager.selected_tab.current_file.path)
+                            self.window_command.add_str(0, 0, 'Pasted', True)
                             #self.tab_manager.selected_tab.selected_file = self.tab_manager.selected_tab.selected_dir.index( os.path.basename(os.path.normpath(self.clipbord)))
                         else:
-                            self.window_command.add_str(0,0,'Item no longer exists',True)
+                            self.window_command.add_str(
+                                0, 0, 'Item no longer exists', True)
                             self.clipbord = None
                     else:
-                        self.window_command.add_str(0,0,'Item already exists',True)
+                        self.window_command.add_str(
+                            0, 0, 'Item already exists', True)
                 else:
-                        self.window_command.add_str(0,0,'No path in clipbord',True)
+                    self.window_command.add_str(
+                        0, 0, 'No path in clipbord', True)
                 self.window_command.refresh()
-                self.render_current_directory()
-                self.render_preview()
+                self.current_dir_widged.draw()
+                self.preview_widged.draw()
 
             elif key in config.K_DELETE:
                 # change selected item then deleate it
                 if self.tab_manager.selected_tab.selected_file:
                     if self.tab_manager.selected_tab.selected_file_index > 0:
-                        self.tab_manager.selected_tab.selected_file_index -=1
+                        self.tab_manager.selected_tab.selected_file_index -= 1
 
                     if len(self.tab_manager.selected_tab.current_file.content) == 1:
                         self.tab_manager.selected_tab.selected_file_index = None
 
-
-                    self.window_command.add_str(0,0,'Confirm deletion of {} (y/n)'.format(self.tab_manager.selected_tab.selected_file.full_name),True)
+                    self.window_command.add_str(0, 0, 'Confirm deletion of {} (y/n)'.format(
+                        self.tab_manager.selected_tab.selected_file.full_name), True)
                     self.window_command.refresh()
                     key = self.get_next_keypress()
                     if key == 'y':
                         if self.tab_manager.selected_tab.selected_file.is_dir:
-                            shutil.rmtree(self.tab_manager.selected_tab.selected_file.path)
+                            shutil.rmtree(
+                                self.tab_manager.selected_tab.selected_file.path)
                         else:
-                            os.remove(self.tab_manager.selected_tab.selected_file.path)
+                            os.remove(
+                                self.tab_manager.selected_tab.selected_file.path)
 
-                        self.render_current_directory()
-                        self.render_preview()
-                        self.render_parent_directory()
+                        self.current_dir_width.draw()
+                        self.preview_widged.draw()
+                        self.parent_dir_widged.draw()
 
                         self.window_command.clear()
-                        self.window_command.add_str(0,0,'Item deleated',True)
+                        self.window_command.add_str(
+                            0, 0, 'Item deleated', True)
                         self.window_command.refresh()
 
                     else:
@@ -239,10 +268,22 @@ class Hero():
                 pass
 
     def init_colors(sefl):
-        curses.init_pair(1,curses.COLOR_WHITE, curses.COLOR_MAGENTA)
+        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_MAGENTA)
+
+    def reload_dir_from_tab(self):
+        self.parent_dir_widged.current_file = self.tab_manager.selected_tab.current_file.parent_dir
+        self.parent_dir_widged.selected_file = self.tab_manager.selected_tab.current_file
+        self.parent_dir_widged.draw()
+
+        self.current_dir_widged.current_file = self.tab_manager.selected_tab.current_file
+        self.current_dir_widged.selected_file = self.tab_manager.selected_tab.selected_file
+        self.current_dir_widged.draw()
+
+        self.preview_widged.current_file = self.tab_manager.selected_tab.selected_file
+        self.preview_widged.draw()
 
     def redraw(self):
-        self.window_info.add_str(0,0,self.stdscr.y)
+        self.window_info.add_str(0, 0, self.stdscr.y)
         self.parent_dir_widged.draw()
         self.current_dir_widged.draw()
         self.preview_widged.draw()
@@ -254,12 +295,12 @@ class Hero():
     def get_next_keypress(self):
         while True:
             keypress = self.stdscr.window.getkey()
-
-            if keypress == "KEY_RESIZE":
-                pass
-                #self.resize()
+            self.window_info.add_str(0, 0, 0, 0, str(keypress))
+            if keypress == curses.KEY_RESIZE:
+                self.resize()
             else:
                 return keypress
+
 
 if __name__ == '__main__':
     curses.wrapper(lambda stdscr: Hero(stdscr))
