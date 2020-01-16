@@ -16,7 +16,7 @@ Upcoming features
 
 Getting Started
 --------
-simply run `main.py` 
+simply run the `main.py` file in the hero folder
 
 Usage
 --------
@@ -26,7 +26,7 @@ Navigation:
 
 Switch Tabs:  
 
-&nbsp;&nbsp;Use the Number Keys from 1-9  
+&nbsp;&nbsp;Use the Number Keys from 0-9  
 
 Perform actions:  
 
