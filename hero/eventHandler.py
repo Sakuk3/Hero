@@ -5,7 +5,7 @@ import json
 
 import blesses
 import models
-from modelHandler import *
+from modelHandler import file_from_path
 from highlight import highlight
 
 

@@ -22,7 +22,7 @@ class File:
     @property
     def extension(self) -> str:
         if self.name:
-            exte = os.path.splitext(self.full_name)[1]
+            exte = os.path.splitext(self.name)[1]
             if exte:
                 return exte
             else:
