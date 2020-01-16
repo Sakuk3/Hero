@@ -95,7 +95,7 @@ def _debug(model: models.Model, event: str):
     model_dict.pop("debug_model_text")
     
     # strip content from Escape sequences for readability 
-    if not model_dict['tabs'][model_dict['selected_tab']]['current_file']['is_dir']:
+    if not model_dict['tabs'][model_dict['selected_tab']]['selected_file']['is_dir']:
         model_dict['tabs'][model_dict['selected_tab']]['selected_file']['content'] = [
             blesses.strip_esc(line) for
             line in model_dict['tabs'][model_dict['selected_tab']
@@ -172,9 +172,6 @@ def _events_debug(model: models.Model, event: str):
         "[A": _debug_up,
         "[B": _debug_down,
     }
-
-    if event.isdigit():
-        return _switch_tabs(model, event)
 
     return events.get(event, _default)(model, event)
 
