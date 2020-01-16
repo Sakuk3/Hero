@@ -38,11 +38,10 @@ def init_model(path: str,username: str,hostname: str):
 
     return Model(
         tabs = [Tab(
-            index = 0,
             current_file =  current_file,
             selected_file = selected_file,
 
-        )],
+        )] + [None]*9,
         username = username,
         hostname = hostname
     )

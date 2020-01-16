@@ -25,8 +25,8 @@ def _render_view(model: models.Model, rows: int, cols: int):
 
 
 def _render_statusbar(model: models.Model, cols: int):
-    tab_list = "".join([blesses.inverse(tab.index) if tab.index ==
-                        model.selected_tab else str(tab.index) for tab in model.tabs])
+    tab_list = "".join([blesses.inverse(idx) if idx ==
+                        model.selected_tab else str(idx) for idx, tab in enumerate(model.tabs) if tab])
 
     blesses.add_str(
         0,

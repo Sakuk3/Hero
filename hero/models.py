@@ -2,15 +2,15 @@ from dataclasses import dataclass
 from typing import List
 import os
 
-@dataclass(frozen=True)
+@dataclass
 class File:
     path:         str
     is_dir:       bool
     content:      List[str] # is_dir list of Files
-    # else readlines
+                            # else readlines
 
-    content_size: int # is_dir    number of files
-    # else      size in byte
+    content_size: int   # is_dir    number of files
+                        # else      size in byte
 
     @property
     def name(self) -> str:
@@ -31,13 +31,12 @@ class File:
             return None
 
 
-@dataclass(frozen=True)
+@dataclass
 class Tab:
-    index:         int
     current_file:  File
     selected_file: File
 
-@dataclass(frozen=True)
+@dataclass
 class Model:
     tabs:               List[Tab]
     username:           str

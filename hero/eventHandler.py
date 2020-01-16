@@ -12,6 +12,7 @@ from highlight import highlight
 def _browse_up(model: models.Model, event: str):
     if model.tabs[model.selected_tab].current_file.is_dir:
         selected_file_index = max(
+            # get index of selected file in context list
             model.tabs[model.selected_tab].current_file.content.index(
                 os.path.basename(
                     model.tabs[model.selected_tab].selected_file.path)
@@ -22,7 +23,7 @@ def _browse_up(model: models.Model, event: str):
         return replace(model,
                        tabs=[
                            tab
-                           if tab.index != model.selected_tab else
+                           if not tab or idx != model.selected_tab else
                            replace(
                                tab,
                                selected_file=file_from_path(
@@ -32,7 +33,7 @@ def _browse_up(model: models.Model, event: str):
                                    )
                                )
                            )
-                           for tab in model.tabs
+                           for idx, tab in enumerate(model.tabs)
                        ]
                        )
     else:
@@ -41,7 +42,9 @@ def _browse_up(model: models.Model, event: str):
 
 def _browse_down(model: models.Model, event: str):
     if model.tabs[model.selected_tab].current_file.is_dir:
+
         selected_file_index = min(
+            # get index of selected file in context list
             model.tabs[model.selected_tab].current_file.content.index(
                 os.path.basename(
                     model.tabs[model.selected_tab].selected_file.path)
@@ -52,7 +55,7 @@ def _browse_down(model: models.Model, event: str):
         return replace(model,
                        tabs=[
                            tab
-                           if tab.index != model.selected_tab else
+                           if  not tab or idx != model.selected_tab else
                            replace(
                                tab,
                                selected_file=file_from_path(
@@ -62,7 +65,7 @@ def _browse_down(model: models.Model, event: str):
                                    )
                                )
                            )
-                           for tab in model.tabs
+                           for idx, tab in enumerate(model.tabs)
                        ]
                        )
     else:
@@ -90,11 +93,14 @@ def _debug(model: models.Model, event: str):
     model_dict = asdict(model)
     model_dict.pop("debug_model_length")
     model_dict.pop("debug_model_text")
-    model_dict['tabs'][model_dict['selected_tab']]['selected_file']['content'] = [
-        blesses.strip_esc(line) for
-        line in model_dict['tabs'][model_dict['selected_tab']
-                                   ]['selected_file']['content']
-    ]
+    
+    # strip content from Escape sequences for readability 
+    if not model_dict['tabs'][model_dict['selected_tab']]['current_file']['is_dir']:
+        model_dict['tabs'][model_dict['selected_tab']]['selected_file']['content'] = [
+            blesses.strip_esc(line) for
+            line in model_dict['tabs'][model_dict['selected_tab']
+                                    ]['selected_file']['content']
+        ]
 
     model_json = json.dumps(model_dict, indent=2)
 
@@ -124,17 +130,19 @@ def _switch_tabs(model: models.Model, event: str):
         return model
 
     # If tab already exists
-    elif [True for tab in model.tabs if tab.index == int(event)]:
-        return replace(model, selected_tab=event)
+    elif [True for idx, tab in enumerate(model.tabs) if tab and idx == int(event)]:
+        return replace(model, selected_tab=int(event))
 
     # If tab dosn't exists
     else:
         return replace(
             replace(model,
-                    tabs=model.tabs + [replace(
-                        model.tabs[model.selected_tab],
-                        index=event
-                    )]
+                        tabs=[
+                            tab
+                            if idx is not int(event) else
+                                model.tabs[model.selected_tab]
+                            for idx, tab in enumerate(model.tabs) 
+                        ]
                     ),
             selected_tab=int(event))
 

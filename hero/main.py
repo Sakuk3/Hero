@@ -35,7 +35,7 @@ def main():
                 model = replace(model, exit=1)
         except Exception as e:
             with open("crash.log", "w+") as f:
-                f.write(json.dumps(asdict(model)))
+                f.write(json.dumps(asdict(model),indent=4))
 
             raise e
 

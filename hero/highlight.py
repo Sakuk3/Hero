@@ -2,13 +2,13 @@ import subprocess
 import sys
 
 """
+    Output Formats:
     ansi:      Terminal 16 color escape codes
     xterm256:  Terminal 256 color escape codes
     truecolor: Terminal 16m color escape codes
 """
-output_format = "truecolor"
 
-def highlight(input: str,syntax_style: str):
+def highlight(input: str,syntax_style: str, output_format: str="ansi"):
     p = subprocess.Popen(
         [
             "highlight",
