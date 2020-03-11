@@ -13,7 +13,8 @@ def highlight(input: str,syntax_style: str, output_format: str="ansi"):
         [
             "highlight",
             "--syntax={}".format(syntax_style),
-            "--out-format={}".format(output_format)
+            "--out-format={}".format(output_format),
+            "--force"
         ],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,

@@ -28,13 +28,17 @@ def _render_statusbar(model: models.Model, cols: int):
     tab_list = "".join([blesses.inverse(idx) if idx ==
                         model.selected_tab else str(idx) for idx, tab in enumerate(model.tabs) if tab])
 
+    if model.tabs[model.selected_tab].selected_file:
+        path = model.tabs[model.selected_tab].selected_file.path
+    else:
+        path = model.tabs[model.selected_tab].current_file.path
     blesses.add_str(
         0,
         0,
         "{}@{} {}".format(
             model.username,
             model.hostname,
-            model.tabs[model.selected_tab].selected_file.path))
+            path))
 
     blesses.add_str(
         0,
@@ -44,27 +48,31 @@ def _render_statusbar(model: models.Model, cols: int):
 
 def _render_current_directory(model: models.Model, rows: int, cols: int):
     width = 30
+    selected_item = None
+    if model.tabs[model.selected_tab].selected_file:
+        selected_item = selected_item=os.path.basename(
+            model.tabs[model.selected_tab].selected_file.path)
     blesses.display_list(
         rows-2,
         width,
         1,
         0,
         model.tabs[model.selected_tab].current_file.content,
-        selected_item=os.path.basename(
-            model.tabs[model.selected_tab].selected_file.path)
+        selected_item=selected_item
     )
 
 
 def _render_preview(model: models.Model, rows: int, cols: int):
     width = cols-30
-    blesses.display_list(
-        rows-2,
-        width,
-        1,
-        30,
-        model.tabs[model.selected_tab].selected_file.content,
-        line_numbers=not model.tabs[model.selected_tab].selected_file.is_dir
-    )
+    if model.tabs[model.selected_tab].selected_file:
+        blesses.display_list(
+            rows-2,
+            width,
+            1,
+            30,
+            model.tabs[model.selected_tab].selected_file.content,
+            line_numbers=not model.tabs[model.selected_tab].selected_file.is_dir
+        )
 
 
 def _render_debug(model: models.Model, rows: int, cols: int):

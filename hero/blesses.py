@@ -13,13 +13,7 @@ hide_cursor = "\x1b[?25l"
 show_cursor = "\x1b[?25h"
 
 # 7-bit C1 ANSI sequences
-ansi_escape = re.compile(r'''
-    \x1B    # ESC
-    [@-_]   # 7-bit C1 Fe
-    [0-?]*  # Parameter bytes
-    [ -/]*  # Intermediate bytes
-    [@-~]   # Final byte
-''', re.VERBOSE)
+ansi_escape_regex = r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])'
 
 
 def _init_terminal():
@@ -77,13 +71,15 @@ def display_list(
     line_numbers: bool = False
 ):
     if line_numbers:
-        list = [(str(idx)+": ").rjust(4)+e for idx, e in enumerate(list)]
+        line_number_length = 4
+        list = [(str(idx)+": ").rjust(line_number_length)+e for idx, e in enumerate(list)]
+        width -= line_number_length
 
     for idx, entry in enumerate(list[list_offsset:height+list_offsset-1]):
         if entry == selected_item:
-            add_str(height_offset+idx, width_offset, inverse(entry[:width]))
+            add_str(height_offset+idx, width_offset, inverse(shorten_str_disp(entry,width)))
         else:
-            add_str(height_offset+idx, width_offset, entry[:width])
+            add_str(height_offset+idx, width_offset, shorten_str_disp(entry,width))
 
 
 def draw():
@@ -94,16 +90,35 @@ def inverse(string: str):
     return "\x1b[7m"+str(string)+"\x1b[0m"
 
 
+# strip ansi escape sequences from string
 def strip_esc(string: str):
-    return ansi_escape.sub('', string)
+    return re.sub(ansi_escape_regex,'',string)
+
+
+# shorten the string while ignoring all ansi escape sequences
+def shorten_str_disp(string: str,len: int):
+    return string[:len]
+    return_str = ""
+    counter = 0
+    for element in re.split("(" + ansi_escape_regex + ")",string):
+        if element.startswith(r'\x1b'):
+            return_str += element
+            counter +=1
+        else:
+            for char in element:
+                return_str += char
+                counter += 1
+                if counter >= len:
+                    break
+
+    return return_str+"\x1b[0m"
 
 
 def display_box(
     height: int,
     width: int,
     width_offset: int,
-    height_offset: int,
-):
+    height_offset: int,):
     box_borders = {
         "topLeft": "╔",
         "topRight": "╗",

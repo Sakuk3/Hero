@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os
 import getpass
 from dataclasses import replace, asdict
@@ -34,7 +36,7 @@ def main():
             except KeyboardInterrupt:
                 model = replace(model, exit=1)
         except Exception as e:
-            with open("crash.log", "w+") as f:
+            with open("crash.json", "w+") as f:
                 f.write(json.dumps(asdict(model),indent=4))
 
             raise e

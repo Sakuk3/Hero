@@ -1,5 +1,4 @@
 Missing features:
-    Add selected file index
     Different file sortings
     Add ftp/ssh feature
     Add info list
@@ -12,3 +11,5 @@ Missing actiones:
     Copy Folders
 
 Bugs:
+    disable line wrap
+    fix blesses.shorten_str_disp
